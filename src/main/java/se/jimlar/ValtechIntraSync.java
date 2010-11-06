@@ -18,12 +18,11 @@ public class ValtechIntraSync extends Activity {
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+        setContentView(R.layout.main);
 
         preferences = getSharedPreferences("valtechdroid",  MODE_PRIVATE);
         String savedUsername = preferences.getString(USERNAME_SETTING, "");
         String savedPassword = preferences.getString(PASSWORD_SETTING, "");
-
-        setContentView(R.layout.main);
 
         getUsername().setText(savedUsername);
         getPassword().setText(savedPassword);
@@ -35,11 +34,13 @@ public class ValtechIntraSync extends Activity {
                 List<Employee> employeeSet = new APIClient(getUsername().getText().toString(),
                                                            getPassword().getText().toString(),
                                                            new APIResponseParser()).getEmployees();
-
-                TextView status = (TextView) findViewById(R.id.status);
-                status.setText(employeeSet.size() + " employes found");
+                getStatusLabel().setText(employeeSet.size() + " employes found");
             }
         });
+    }
+
+    private TextView getStatusLabel() {
+        return (TextView) findViewById(R.id.status);
     }
 
     private EditText getPassword() {

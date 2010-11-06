@@ -32,19 +32,12 @@
         android:layout_below="@id/passwordentry"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="10dip"
-        android:text="OK" />
-    <Button
-        android:id="@+id/cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/ok"
-        android:layout_alignTop="@id/ok"
-        android:text="Cancel" />
+        android:text="Sync" />
   
   <TextView
       android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/cancel"
+        android:layout_below="@+id/ok"
         android:text="" />
 </RelativeLayout>

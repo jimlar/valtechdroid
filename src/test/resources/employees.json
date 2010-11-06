@@ -1,0 +1,24 @@
+[
+    {
+        "status": {
+            "created_on": "2010-08-18 16:03:29", 
+            "description": "@Ulf klar prezi känsla på den där.", 
+            "id": 7377
+        }, 
+        "username": "jimmy.larsson", 
+        "www": "https://twitter.com/jimlar", 
+        "last_name": "Larsson", 
+        "title": null, 
+        "mobile": "+46 701653474", 
+        "first_name": "Jimmy", 
+        "id": 272, 
+        "phone": "+46 856223474", 
+        "get_image_url": "/sitemedia/img/employees/jimmy.larsson.jpg", 
+        "messenger": "jimmy.larsson@valtech.se", 
+        "email": "jimmy.larsson@valtech.se", 
+        "last_login": "2010-08-16 08:52:49", 
+        "presentation": "", 
+        "start_date": "2006-12-04", 
+        "date_joined": "2008-11-12 14:54:18"
+    }
+]

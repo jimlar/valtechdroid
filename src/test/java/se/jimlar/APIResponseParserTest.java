@@ -1,9 +1,9 @@
 package se.jimlar;
 
-import android.test.AndroidTestCase;
-import android.test.InstrumentationTestCase;
 import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
+import se.jimlar.intranet.APIResponseParser;
+import se.jimlar.intranet.Employee;
 
 import java.io.IOException;
 import java.io.InputStream;

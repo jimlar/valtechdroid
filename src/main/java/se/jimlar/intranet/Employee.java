@@ -1,4 +1,4 @@
-package se.jimlar;
+package se.jimlar.intranet;
 
 public class Employee {
     private String firstName;
@@ -6,8 +6,10 @@ public class Employee {
     private String phone;
     private String imageUrl;
     private String email;
+    private long userId;
 
-    public Employee(String firstName, String lastName, String phone, String imageUrl, String email) {
+    public Employee(long userId, String firstName, String lastName, String phone, String imageUrl, String email) {
+        this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
@@ -33,5 +35,13 @@ public class Employee {
 
     public String getEmail() {
         return email;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public boolean isDeleted() {
+        return false;
     }
 }

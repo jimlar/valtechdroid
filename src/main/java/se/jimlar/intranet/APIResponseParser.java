@@ -1,4 +1,4 @@
-package se.jimlar;
+package se.jimlar.intranet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,7 +15,8 @@ public class APIResponseParser {
             JSONArray array = new JSONArray(data);
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                result.add(new Employee(object.getString("first_name"),
+                result.add(new Employee(object.getLong("id"),
+                                        object.getString("first_name"),
                                         object.getString("last_name"),
                                         object.getString("mobile"),
                                         null,

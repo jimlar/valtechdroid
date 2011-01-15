@@ -1,43 +1,11 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-    <TextView
-        android:id="@+id/userlabel"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Username:"/>
-    <EditText
-        android:id="@+id/userentry"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:drawable/editbox_background"
-        android:layout_below="@id/userlabel"/>
-    <TextView
-        android:id="@+id/passlabel"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/userentry"
-        android:text="Password:"/>
-    <EditText
-        android:id="@+id/passwordentry"
-        android:password="true"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:drawable/editbox_background"
-        android:layout_below="@id/passlabel"/>
-    <Button
-        android:id="@+id/ok"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/passwordentry"
-        android:layout_alignParentRight="true"
-        android:layout_marginLeft="10dip"
-        android:text="Sync" />
-  
-  <TextView
-      android:id="@+id/status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ok"
-        android:text="" />
-</RelativeLayout>
+    android:layout_height="fill_parent"
+    >
+<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/username"/>
+<EditText android:layout_height="wrap_content" android:id="@+id/username" android:layout_width="fill_parent" android:inputType="textNoSuggestions"></EditText>
+<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/password"/>
+<EditText android:layout_height="wrap_content" android:id="@+id/password" android:layout_width="fill_parent" android:inputType="textPassword"></EditText>
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/login" android:text="@string/login" android:layout_gravity="center"></Button>
+</LinearLayout>

@@ -1,5 +1,6 @@
-package se.jimlar;
+package se.jimlar.intranet;
 
+import android.util.Log;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -23,15 +24,34 @@ public class APIClient {
         this.parser = parser;
     }
 
-    public List<Employee> getEmployees() {
+    public boolean authenticate() {
+        DefaultHttpClient client = getHttpClient();
+        HttpGet request = new HttpGet("https://intranet.valtech.se/api/employees/");
+        try {
+            HttpResponse response = client.execute(request);
+            StatusLine status = response.getStatusLine();
+            Log.i("API", "status.getStatusCode() = " + status.getStatusCode());
+            Log.i("API", "status.getReasonPhrase() = " + status.getReasonPhrase());
+            return status.getStatusCode() == 200;
 
+        } catch (IOException e) {
+            Log.w("API", "Could not authenticate", e);
+            return false;
+        }
+    }
+
+    public List<Employee> getEmployees() {
+        DefaultHttpClient client = getHttpClient();
+        HttpGet request = new HttpGet("https://intranet.valtech.se/api/employees/");
+        String data = execteRequest(client, request);
+        return parser.parseEmployees(data);
+    }
+
+    private DefaultHttpClient getHttpClient() {
         DefaultHttpClient client = new DefaultHttpClient();
         client.getCredentialsProvider().setCredentials(new AuthScope("intranet.valtech.se", 443),
                                                        new UsernamePasswordCredentials(username, password));
-        HttpGet request = new HttpGet("https://intranet.valtech.se/api/employees/");
-        String data = execteRequest(client, request);
-
-        return parser.parseEmployees(data);
+        return client;
     }
 
     private String execteRequest(DefaultHttpClient client, HttpUriRequest request) {
@@ -58,4 +78,5 @@ public class APIClient {
             throw new RuntimeException("Problem communicating with API", e);
         }
     }
+
 }

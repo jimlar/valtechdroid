@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.awt.event.KeyEvent;
+
 class Authenticator extends AbstractAccountAuthenticator {
     private static final String LOG_TAG = Authenticator.class.getName();
     private Context context;
@@ -39,8 +41,12 @@ class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
-        Log.i(LOG_TAG, "getAuthToken");
-        return null;
+        Log.i(LOG_TAG, "getAuthToken, options: " + options);
+        Bundle bundle = new Bundle();
+        bundle.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+        bundle.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+        bundle.putString(AccountManager.KEY_AUTHTOKEN, AccountManager.get(context).getPassword(account));
+        return bundle;
     }
 
     @Override

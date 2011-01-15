@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import java.awt.event.KeyEvent;
-
 class Authenticator extends AbstractAccountAuthenticator {
     private static final String LOG_TAG = Authenticator.class.getName();
     private Context context;

@@ -47,18 +47,18 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void storeEmployees(List<Employee> employees) {
 
-        deleteAllContacts();
+//        deleteAllContacts();
 
-        int i = 0;
+//        int i = 0;
         for (Employee employee : employees) {
             Log.d(LOG_TAG, "Found employee: " + employee.getEmail());
 
-            i++;
-            if (i > 5) {
-                Log.d(LOG_TAG, "Breaking import");
-                break;
-            }
-
+//            i++;
+//            if (i > 5) {
+//                Log.d(LOG_TAG, "Breaking import");
+//                break;
+//            }
+//
             String phone = employee.getMobilePhone();
             if (phone == null) {
                 Log.d(LOG_TAG, "No phone number for employee, skipped sync");
@@ -73,6 +73,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void storeEmployee(Employee employee) {
+
+        //TODO: Should really update this to use the Android 2 APIs
+
         ContentValues values = new ContentValues();
         values.put(Contacts.People.NAME, employee.getFirstName() + " " + employee.getLastName());
         Uri uri = context.getContentResolver().insert(Contacts.People.CONTENT_URI, values);

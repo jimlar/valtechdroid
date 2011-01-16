@@ -7,12 +7,9 @@ The idea is that you will benefit from getting all the phone numbers in (short/l
 
 ## Done
 * Reading the Valtech intranet contacts
-* Reading the Android contacts database
-* Inputs for username / password
+* Android sync adapter, to store account info and schedule sync
 
 ## TODO
 * Find a way to do tests in Android that is not pure pain
-* Tag the contacts as synced by the Valtech Sync
-* Do the actual contact merge
-* Background Service, or add the user/pass stuff as a syncadapter: http://developer.android.com/resources/samples/SampleSyncAdapter/index.html
-
+* Migrate to the Android 2 Contacts APIs
+* Batch the ContentProvider operations

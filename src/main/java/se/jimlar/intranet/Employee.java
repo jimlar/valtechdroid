@@ -3,16 +3,16 @@ package se.jimlar.intranet;
 public class Employee {
     private String firstName;
     private String lastName;
-    private String phone;
+    private String mobilePhone;
     private String imageUrl;
     private String email;
     private long userId;
 
-    public Employee(long userId, String firstName, String lastName, String phone, String imageUrl, String email) {
+    public Employee(long userId, String firstName, String lastName, String mobilePhone, String imageUrl, String email) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.phone = phone;
+        this.mobilePhone = mobilePhone;
         this.imageUrl = imageUrl;
         this.email = email;
     }
@@ -25,8 +25,13 @@ public class Employee {
         return lastName;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getMobilePhone() {
+        return mobilePhone;
+    }
+
+    public String getShortPhone() {
+        String phone = getMobilePhone();
+        return phone.substring(phone.length() - 4, phone.length());
     }
 
     public String getImageUrl() {
@@ -43,5 +48,9 @@ public class Employee {
 
     public boolean isDeleted() {
         return false;
+    }
+
+    public String getWorkPhone() {
+        return "+46 8 5622 " + getShortPhone();
     }
 }

@@ -28,7 +28,7 @@ public class APIResponseParserTest extends TestCase {
         assertEquals(1, employees.size());
         assertEquals("Jimmy", employees.get(0).getFirstName());
         assertEquals("Larsson", employees.get(0).getLastName());
-        assertEquals("+46 701653474", employees.get(0).getPhone());
+        assertEquals("+46 701653474", employees.get(0).getMobilePhone());
         assertEquals("jimmy.larsson@valtech.se", employees.get(0).getEmail());
     }
 

@@ -2,17 +2,17 @@ package se.jimlar.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.AbstractThreadedSyncAdapter;
-import android.content.ContentProviderClient;
-import android.content.Context;
-import android.content.SyncResult;
+import android.content.*;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Contacts;
 import android.util.Log;
 import se.jimlar.R;
 import se.jimlar.intranet.APIClient;
 import se.jimlar.intranet.APIResponseParser;
 import se.jimlar.intranet.Employee;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class SyncAdapter extends AbstractThreadedSyncAdapter {
@@ -37,7 +37,38 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             List<Employee> employees = client.getEmployees();
             for (Employee employee : employees) {
                 Log.d(LOG_TAG, "Found employee: " + employee.getEmail());
+
+
+                //TODO: batch these operations
+                String phone = employee.getPhone();
+                if (phone == null) {
+                    Log.d(LOG_TAG, "No phone number for employee, skipped sync");
+
+                } else {
+                    ContentValues values = new ContentValues();
+                    values.put(Contacts.People.NAME, employee.getFirstName() + " " + employee.getLastName());
+                    values.put(Contacts.People.PRIMARY_EMAIL_ID, employee.getEmail());
+                    Uri uri = context.getContentResolver().insert(Contacts.People.CONTENT_URI, values);
+
+                    Uri phoneUri = Uri.withAppendedPath(uri, Contacts.People.Phones.CONTENT_DIRECTORY);
+
+                    Log.d(LOG_TAG, "Phone: " + phone);
+                    phone = phone.replaceAll(" ", "");
+                    phone = phone.replaceAll("-", "");
+                    String shortPhone = phone.substring(phone.length() - 4, phone.length());
+
+                    values.clear();
+                    values.put(Contacts.People.Phones.TYPE, Contacts.People.Phones.TYPE_MOBILE);
+                    values.put(Contacts.People.Phones.NUMBER, phone);
+                    context.getContentResolver().insert(phoneUri, values);
+
+                    values.clear();
+                    values.put(Contacts.People.Phones.TYPE, Contacts.People.Phones.TYPE_OTHER);
+                    values.put(Contacts.People.Phones.NUMBER, shortPhone);
+                    context.getContentResolver().insert(phoneUri, values);
+                }
             }
+
 
         } catch (Exception e) {
             Log.w(LOG_TAG, "Sync failed", e);

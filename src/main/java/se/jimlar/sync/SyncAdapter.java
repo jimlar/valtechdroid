@@ -55,6 +55,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     Log.d(LOG_TAG, "Phone: " + phone);
                     phone = phone.replaceAll(" ", "");
                     phone = phone.replaceAll("-", "");
+
+                    //TODO: should store the 08 phone also
                     String shortPhone = phone.substring(phone.length() - 4, phone.length());
 
                     values.clear();
@@ -66,6 +68,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     values.put(Contacts.People.Phones.TYPE, Contacts.People.Phones.TYPE_OTHER);
                     values.put(Contacts.People.Phones.NUMBER, shortPhone);
                     context.getContentResolver().insert(phoneUri, values);
+
+                    //TODO: store the contact image
                 }
             }
 

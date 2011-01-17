@@ -1,6 +1,7 @@
 ## WARNING
 This stuff is not at all complete, and may very well delete all the contacts on your phone if installed and executed.
-*Use with caution!*
+
+**Use with caution!**
 
 ## Valtechdroid
 This is an Android application that synchronizes the Valtech Sweden employees into your Android contacts.

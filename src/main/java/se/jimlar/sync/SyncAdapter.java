@@ -3,15 +3,9 @@ package se.jimlar.sync;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.*;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
-import android.provider.BaseColumns;
-import android.provider.Contacts;
 import android.provider.ContactsContract;
 import android.util.Log;
-import android.widget.Toast;
 import se.jimlar.R;
 import se.jimlar.intranet.APIClient;
 import se.jimlar.intranet.APIResponseParser;
@@ -48,7 +42,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void storeEmployees(List<Employee> employees) {
-//        deleteAllContacts();
+//        deleteAllContactsAndGroups();
 
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
@@ -57,7 +51,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             Log.d(LOG_TAG, "Found employee: " + employee.getEmail());
 
             i++;
-            if (i > 10) {
+            if (i > 20) {
                 Log.d(LOG_TAG, "Breaking import");
                 break;
             }
@@ -88,35 +82,30 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                           .build());
         batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                           .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
-                          .withValue(ContactsContract.Data.MIMETYPE,
-                                     ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                          .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
                           .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, employee.getFirstName() + " " + employee.getLastName())
                           .build());
         batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                           .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
-                          .withValue(ContactsContract.Data.MIMETYPE,
-                                     ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                          .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                           .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, employee.getMobilePhone())
                           .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE)
                           .build());
         batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                           .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
-                          .withValue(ContactsContract.Data.MIMETYPE,
-                                     ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                          .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                           .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, employee.getShortPhone())
                           .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_OTHER)
                           .build());
         batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                           .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
-                          .withValue(ContactsContract.Data.MIMETYPE,
-                                     ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                          .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                           .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, employee.getWorkPhone())
                           .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
                           .build());
         batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                           .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
-                          .withValue(ContactsContract.Data.MIMETYPE,
-                                     ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                          .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
                           .withValue(ContactsContract.CommonDataKinds.Email.DATA, employee.getEmail())
                           .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
                           .build());
@@ -124,22 +113,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         //TODO: store the contact image
     }
 
-    private void deleteAllContacts() {
-        Cursor cur = context.getContentResolver().query(Contacts.People.CONTENT_URI, new String[]{Contacts.People._ID}, null, null, null);
-
-        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-        while (cur.moveToNext()) {
-            Uri personUri = Contacts.People.CONTENT_URI;
-            personUri = personUri.buildUpon().appendPath(Long.toString(cur.getLong(0))).build();
-            ops.add(ContentProviderOperation.newDelete(personUri).build());
-        }
-
-        try {
-            context.getContentResolver().applyBatch(Contacts.AUTHORITY, ops);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        } catch (OperationApplicationException e) {
-            throw new RuntimeException(e);
-        }
+    private void deleteAllContactsAndGroups() {
+        context.getContentResolver().delete(ContactsContract.RawContacts.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build(), null, null);
+        context.getContentResolver().delete(ContactsContract.Groups.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build(), null, null);
     }
 }

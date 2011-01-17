@@ -111,6 +111,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                           .build());
 
         //TODO: store the contact image
+        //  (https://intranet.valtech.se/sitemedia/img/employees/xxxxx.yyyyyy.thumbnail.jpg?nocache=654204881516)
+
     }
 
     private void deleteAllContactsAndGroups() {

@@ -22,4 +22,4 @@ The idea is that you will benefit from getting all types phone numbers in (short
 * Update contact with changed/new info on consecutive executions
 * Add the contacts to a group that is visible
 * Prevent added contacts from beeing synced to other places
-* Add contact image (https://intranet.valtech.se/sitemedia/img/employees/xxxxx.yyyyyy.thumbnail.jpg?nocache=654204881516)
+* Add contact image

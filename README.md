@@ -3,12 +3,12 @@ This stuff is not at all complete, and may very well delete all the contacts on 
 
 **Use with caution!**
 
-## Valtechdroid
+## ValtechDroid
 This is an Android SyncAdapter that synchronizes the Valtech Sweden employees into your Android contacts.
-The idea is that you will benefit from getting all types phone numbers in (short/long mobile area code and local area code) and also get images and location info from the intranet.
+The idea is that you will benefit from getting all types of phone numbers (short/mobile/local), images and geo locations from the intranet.
 
 ### Android Compatibility
-* This sync adapter requires Android 2.1
+* Requires Android 2.1-update1
 
 ### Stuff Done
 * Reading the Valtech intranet contacts
@@ -17,9 +17,9 @@ The idea is that you will benefit from getting all types phone numbers in (short
 * Batching the ContentProvider operations insert/update operations
 * Adds email, mobile phone, local phone and short phone
 
-### Stuff To Do
+### Stuff ToDo
 * Find a way to do tests in Android that is not pure pain
 * Update contact with changed/new info on consecutive executions
 * Add the contacts to a group that is visible
-* Prevent added contacts from beeing synced to other places
+* Prevent added contacts from being synced to other places
 * Add contact image

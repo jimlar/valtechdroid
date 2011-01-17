@@ -10,14 +10,14 @@ The idea is that you will benefit from getting all types phone numbers in (short
 ## Compatibility
 * This sync adapter requires Android 2.1
 
-## Done
+### Done
 * Reading the Valtech intranet contacts
 * Android sync adapter, to store account info and schedule sync
 * Migrate to the Android 2 Contacts APIs
 * Batching the ContentProvider operations insert/update operations
 * Adds email, mobile phone, local phone and short phone
 
-## TODO
+### TODO
 * Find a way to do tests in Android that is not pure pain
 * Update contact with changed/new info on consecutive executions
 * Add the contacts to a group that is visible

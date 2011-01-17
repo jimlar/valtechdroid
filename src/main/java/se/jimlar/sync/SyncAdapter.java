@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.BaseColumns;
 import android.provider.Contacts;
+import android.provider.ContactsContract;
 import android.util.Log;
+import android.widget.Toast;
 import se.jimlar.R;
 import se.jimlar.intranet.APIClient;
 import se.jimlar.intranet.APIResponseParser;
@@ -46,78 +48,89 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void storeEmployees(List<Employee> employees) {
-
 //        deleteAllContacts();
 
-//        int i = 0;
+        ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
+
+        int i = 0;
         for (Employee employee : employees) {
             Log.d(LOG_TAG, "Found employee: " + employee.getEmail());
 
-//            i++;
-//            if (i > 5) {
-//                Log.d(LOG_TAG, "Breaking import");
-//                break;
-//            }
-//
+            i++;
+            if (i > 10) {
+                Log.d(LOG_TAG, "Breaking import");
+                break;
+            }
+
             String phone = employee.getMobilePhone();
             if (phone == null) {
                 Log.d(LOG_TAG, "No phone number for employee, skipped sync");
 
             } else {
-
-                Log.d(LOG_TAG, "Phone: " + phone);
-
-                storeEmployee(employee);
+                storeEmployee(employee, batch);
             }
         }
+
+        try {
+            context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, batch);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Exception encountered while running sync batch: " + e);
+        }
+
     }
 
-    private void storeEmployee(Employee employee) {
+    private void storeEmployee(Employee employee, ArrayList<ContentProviderOperation> batch) {
+        int index = batch.size();
 
-        //TODO: Should really update this to use the Android 2 APIs
-
-        ContentValues values = new ContentValues();
-        values.put(Contacts.People.NAME, employee.getFirstName() + " " + employee.getLastName());
-        Uri uri = context.getContentResolver().insert(Contacts.People.CONTENT_URI, values);
-
-        Uri phoneUri = Uri.withAppendedPath(uri, Contacts.People.Phones.CONTENT_DIRECTORY);
-
-        values.clear();
-        values.put(Contacts.People.Phones.TYPE, Contacts.People.Phones.TYPE_MOBILE);
-        values.put(Contacts.People.Phones.NUMBER, employee.getMobilePhone());
-        context.getContentResolver().insert(phoneUri, values);
-
-        values.clear();
-        values.put(Contacts.People.Phones.TYPE, Contacts.People.Phones.TYPE_WORK);
-        values.put(Contacts.People.Phones.NUMBER, employee.getWorkPhone());
-        context.getContentResolver().insert(phoneUri, values);
-
-        values.clear();
-        values.put(Contacts.People.Phones.TYPE, Contacts.People.Phones.TYPE_OTHER);
-        values.put(Contacts.People.Phones.NUMBER, employee.getShortPhone());
-        context.getContentResolver().insert(phoneUri, values);
-
-        Uri emailUri = Uri.withAppendedPath(uri, Contacts.People.ContactMethods.CONTENT_DIRECTORY);
-
-        values.clear();
-        values.put(Contacts.People.ContactMethods.KIND, Contacts.KIND_EMAIL);
-        values.put(Contacts.People.ContactMethods.TYPE, Contacts.People.ContactMethods.TYPE_WORK);
-        values.put(Contacts.People.ContactMethods.DATA, employee.getEmail());
-        context.getContentResolver().insert(emailUri, values);
+        batch.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
+                          .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null) //This wierdness make the contact visible
+                          .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null) //This wierdness make the contact visible
+                          .build());
+        batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                          .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
+                          .withValue(ContactsContract.Data.MIMETYPE,
+                                     ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                          .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, employee.getFirstName() + " " + employee.getLastName())
+                          .build());
+        batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                          .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
+                          .withValue(ContactsContract.Data.MIMETYPE,
+                                     ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                          .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, employee.getMobilePhone())
+                          .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE)
+                          .build());
+        batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                          .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
+                          .withValue(ContactsContract.Data.MIMETYPE,
+                                     ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                          .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, employee.getShortPhone())
+                          .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_OTHER)
+                          .build());
+        batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                          .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
+                          .withValue(ContactsContract.Data.MIMETYPE,
+                                     ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                          .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, employee.getWorkPhone())
+                          .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
+                          .build());
+        batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                          .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
+                          .withValue(ContactsContract.Data.MIMETYPE,
+                                     ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                          .withValue(ContactsContract.CommonDataKinds.Email.DATA, employee.getEmail())
+                          .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+                          .build());
 
         //TODO: store the contact image
     }
 
     private void deleteAllContacts() {
-        String[] projection = new String[] { Contacts.People._ID, Contacts.People.NAME, Contacts.People.NUMBER };
-        Cursor cur = context.getContentResolver().query(Contacts.People.CONTENT_URI, projection, null, null,
-                                                        Contacts.People.DEFAULT_SORT_ORDER);
+        Cursor cur = context.getContentResolver().query(Contacts.People.CONTENT_URI, new String[]{Contacts.People._ID}, null, null, null);
 
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
         while (cur.moveToNext()) {
-            Long id = cur.getLong(cur.getColumnIndex(BaseColumns._ID));
             Uri personUri = Contacts.People.CONTENT_URI;
-            personUri = personUri.buildUpon().appendPath(Long.toString(id)).build();
+            personUri = personUri.buildUpon().appendPath(Long.toString(cur.getLong(0))).build();
             ops.add(ContentProviderOperation.newDelete(personUri).build());
         }
 

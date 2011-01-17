@@ -30,7 +30,7 @@ public class Employee {
     }
 
     public String getShortPhone() {
-        String phone = getMobilePhone();
+        String phone = getMobilePhone().replace(" ", "").replace("-", "");
         return phone.substring(phone.length() - 4, phone.length());
     }
 

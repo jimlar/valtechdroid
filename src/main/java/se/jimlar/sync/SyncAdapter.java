@@ -42,7 +42,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void storeEmployees(List<Employee> employees) {
-//        deleteAllContactsAndGroups();
+        deleteAllContactsAndGroups();
 
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
@@ -77,8 +77,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         int index = batch.size();
 
         batch.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
-                          .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null) //This wierdness make the contact visible
-                          .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null) //This wierdness make the contact visible
+                          .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null) //This weirdness make the contact visible
+                          .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null) //This weirdness make the contact visible
                           .build());
         batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                           .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)

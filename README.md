@@ -1,6 +1,10 @@
+## WARNING
+This stuff is not at all complete, and may very well delete all the contacts on your phone if installed and executed.
+# Use with caution!
+
 ## Valtechdroid
-This is an Android application that synchronizes the Valtech Sweden employees into your address book.
-The idea is that you will benefit from getting all the phone numbers in (short/long mobile area code and local area code), images and location info from the intranet.
+This is an Android application that synchronizes the Valtech Sweden employees into your Android contacts.
+The idea is that you will benefit from getting all types phone numbers in (short/long mobile area code and local area code) and also get images and location info from the intranet.
 
 ## Compatibility
 * This app will require Android 2.0

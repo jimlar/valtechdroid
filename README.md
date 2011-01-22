@@ -20,6 +20,6 @@ The idea is that you will benefit from getting all types of phone numbers (short
 ### Stuff ToDo
 * Find a way to do tests in Android that is not pure pain
 * Update contact with changed/new info on consecutive executions
-* Add the contacts to a group that is visible
+* Add the contacts to a group that is visible (instead of the null account type/name)
 * Prevent added contacts from being synced to other places
 * Add contact image

@@ -27,11 +27,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        Log.d(LOG_TAG, "User: " + account.name);
-
         try {
             String authToken = accountManager.blockingGetAuthToken(account, context.getString(R.string.ACCOUNT_TYPE), true);
-            Log.d(LOG_TAG, "Pass: " + authToken);
             APIClient client = new APIClient(account.name, authToken, new APIResponseParser());
             List<Employee> employees = client.getEmployees();
             storeEmployees(employees);
@@ -112,6 +109,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         //TODO: store the contact image
         //  (https://intranet.valtech.se/sitemedia/img/employees/xxxxx.yyyyyy.thumbnail.jpg?nocache=654204881516)
+        Log.d(LOG_TAG, "Image Url: " + employee.getImageUrl());
 
     }
 

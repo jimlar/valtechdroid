@@ -4,6 +4,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.*;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -13,6 +15,9 @@ import se.jimlar.intranet.APIClient;
 import se.jimlar.intranet.APIResponseParser;
 import se.jimlar.intranet.Employee;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,14 +38,14 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             String authToken = accountManager.blockingGetAuthToken(account, context.getString(R.string.ACCOUNT_TYPE), true);
             APIClient client = new APIClient(account.name, authToken, new APIResponseParser());
             List<Employee> employees = client.getEmployees();
-            storeEmployees(employees, account);
+            storeEmployees(employees, account, client);
 
         } catch (Exception e) {
             Log.w(LOG_TAG, "Sync failed", e);
         }
     }
 
-    private void storeEmployees(List<Employee> employees, Account account) {
+    private void storeEmployees(List<Employee> employees, Account account, APIClient client) {
         deleteAllContactsAndGroups();
 
         Long groupId = getOrCreateGroup(account);
@@ -51,11 +56,11 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         for (Employee employee : employees) {
             Log.d(LOG_TAG, "Found employee: " + employee.getEmail());
 
-            i++;
-            if (i > 20) {
-                Log.d(LOG_TAG, "Breaking import");
-                break;
-            }
+//            i++;
+//            if (i > 1) {
+//                Log.d(LOG_TAG, "Breaking import");
+//                break;
+//            }
 
             String phone = employee.getMobilePhone();
             if (phone == null) {
@@ -73,9 +78,56 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
 
-        dumpTable(ContactsContract.Data.CONTENT_URI, null);
-        dumpTable(ContactsContract.Groups.CONTENT_URI, null);
-        dumpTable(ContactsContract.RawContacts.CONTENT_URI, null);
+//        insertPhotos(account, client);
+//
+//
+//        dumpTable(ContactsContract.Data.CONTENT_URI, null);
+//        dumpTable(ContactsContract.Groups.CONTENT_URI, null);
+//        dumpTable(ContactsContract.RawContacts.CONTENT_URI, null);
+    }
+
+    private void insertPhotos(Account account, APIClient client) {
+
+        //
+        //TODO: store the contact image
+        //
+        // Seems like most people use a second (async) pass to download the photos
+        // - How to stream it: http://developer.android.com/reference/android/content/ContentResolver.html#openOutputStream(android.net.Uri)
+        // - Batch example: http://efreedom.com/Question/1-3234386/Android-Batch-Insert-Contact-Photo
+        // - Store progress/state in the sync metadata: http://developer.android.com/reference/android/provider/ContactsContract.CommonDataKinds.Photo.html
+        //
+        // NOTE: intranet photos seem to require authentication, need to fix that
+        //
+
+        Cursor cursor = context.getContentResolver().query(ContactsContract.RawContacts.CONTENT_URI,
+                                                          new String[]{ContactsContract.RawContacts._ID, ContactsContract.RawContacts.SYNC1},
+                                                          ContactsContract.Groups.ACCOUNT_NAME + " = ? AND " + ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
+                                                          new String[]{account.name, account.type},
+                                                          null);
+
+        while (cursor.moveToNext()) {
+            long contactId = cursor.getLong(0);
+            String imageUrl = cursor.getString(1);
+
+            try {
+                InputStream in = client.download(imageUrl);
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+                Bitmap bitmap = BitmapFactory.decodeStream(in);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 75, out);
+                in.close();
+
+                ContentValues values = new ContentValues();
+                values.put(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, contactId);
+                values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
+                values.put(ContactsContract.CommonDataKinds.Photo.PHOTO, out.toByteArray());
+
+                context.getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
+
+            } catch (Exception e) {
+                Log.w(LOG_TAG, "Could not insert photo", e);
+            }
+        }
     }
 
     private Long getOrCreateGroup(Account account) {
@@ -167,17 +219,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                           .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE)
                           .withValue(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, groupId)
                           .build());
-
-        //TODO: store the contact image
-        //
-        // Seems like most people use a second (async) pass to download the photos
-        // - How to stream it: http://developer.android.com/reference/android/content/ContentResolver.html#openOutputStream(android.net.Uri)
-        // - Batch example: http://efreedom.com/Question/1-3234386/Android-Batch-Insert-Contact-Photo
-        // - Store progress/state in the sync metadata: http://developer.android.com/reference/android/provider/ContactsContract.CommonDataKinds.Photo.html
-        //
-
-
-        Log.d(LOG_TAG, "Image Url: " + employee.getImageUrl());
     }
 
     private void deleteAllContactsAndGroups() {

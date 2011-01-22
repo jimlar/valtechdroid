@@ -47,6 +47,14 @@ public class APIClient {
         return parser.parseEmployees(data);
     }
 
+    public InputStream download(String path) throws IOException {
+        DefaultHttpClient client = getHttpClient();
+        HttpGet request = new HttpGet("https://intranet.valtech.se" + path);
+        Log.d("API", "Downloading " + request.getURI());
+        HttpResponse response = client.execute(request);
+        return response.getEntity().getContent();
+    }
+
     private DefaultHttpClient getHttpClient() {
         DefaultHttpClient client = new DefaultHttpClient();
         client.getCredentialsProvider().setCredentials(new AuthScope("intranet.valtech.se", 443),

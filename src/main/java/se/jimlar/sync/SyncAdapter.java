@@ -108,7 +108,14 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                           .build());
 
         //TODO: store the contact image
-        //  (https://intranet.valtech.se/sitemedia/img/employees/xxxxx.yyyyyy.thumbnail.jpg?nocache=654204881516)
+        //
+        // Seems like most people use a second (async) pass to download the photos
+        // - How to stream it: http://developer.android.com/reference/android/content/ContentResolver.html#openOutputStream(android.net.Uri)
+        // - Batch example: http://efreedom.com/Question/1-3234386/Android-Batch-Insert-Contact-Photo
+        // - Store progress/state in the sync metadata: http://developer.android.com/reference/android/provider/ContactsContract.CommonDataKinds.Photo.html
+        //
+        
+
         Log.d(LOG_TAG, "Image Url: " + employee.getImageUrl());
 
     }

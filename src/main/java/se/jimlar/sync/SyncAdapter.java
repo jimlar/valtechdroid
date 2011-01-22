@@ -41,6 +41,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     private void storeEmployees(List<Employee> employees) {
         deleteAllContactsAndGroups();
 
+        createGroupIfNeeded();
+
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
         int i = 0;
@@ -67,6 +69,19 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (Exception e) {
             Log.e(LOG_TAG, "Exception encountered while running sync batch: " + e);
         }
+
+    }
+
+    private void createGroupIfNeeded() {
+        ContentValues values = new ContentValues();
+        values.put(ContactsContract.Groups.TITLE, "Valtech Intranet");
+        values.put(ContactsContract.Groups.GROUP_VISIBLE, 1);
+        values.put(ContactsContract.Groups.SHOULD_SYNC, 0);
+
+        values.put(ContactsContract.Groups.ACCOUNT_NAME, "");
+        values.put(ContactsContract.Groups.ACCOUNT_TYPE, "");
+
+        context.getContentResolver().insert(ContactsContract.Groups.CONTENT_URI, values);
 
     }
 

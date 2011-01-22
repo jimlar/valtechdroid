@@ -24,3 +24,4 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Prevent added contacts from being synced to other places
 * Add contact image
 * Test password in the password dialog
+* Add organization to the contact

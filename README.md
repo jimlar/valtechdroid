@@ -16,11 +16,11 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Migrate to the Android 2 Contacts APIs
 * Batching the ContentProvider operations insert/update operations
 * Adds email, mobile phone, local phone and short phone
+* Add the contacts to a group that is visible (instead of the null account type/name)
 
 ### Stuff ToDo
 * Find a way to do tests in Android that is not pure pain
 * Update contact with changed/new info on consecutive executions
-* Add the contacts to a group that is visible (instead of the null account type/name)
 * Prevent added contacts from being synced to other places
 * Add contact image
 * Test password in the password dialog

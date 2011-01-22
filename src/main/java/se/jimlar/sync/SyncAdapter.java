@@ -76,6 +76,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         batch.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                           .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null) //This weirdness make the contact visible
                           .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null) //This weirdness make the contact visible
+                          .withValue(ContactsContract.RawContacts.SYNC1, employee.getImageUrl())
+                          .withValue(ContactsContract.RawContacts.SYNC2, "not_downloaded")
                           .build());
         batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                           .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)

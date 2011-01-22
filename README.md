@@ -23,3 +23,4 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Add the contacts to a group that is visible (instead of the null account type/name)
 * Prevent added contacts from being synced to other places
 * Add contact image
+* Test password in the password dialog

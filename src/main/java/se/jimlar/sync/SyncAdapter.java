@@ -109,20 +109,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             long contactId = cursor.getLong(0);
             String imageUrl = cursor.getString(1);
 
-            InputStream in = null;
-            try {
-                in = client.download(imageUrl);
-                if (in == null) {
-                    continue;
-                }
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
+            //TODO: remove this when the thumbnails are in the API properly
+            int i = imageUrl.lastIndexOf('.');
+            imageUrl = imageUrl.substring(0, i) + ".thumbnail" + imageUrl.substring(i);
 
-                Bitmap bitmap = BitmapFactory.decodeStream(in);
-                if (bitmap == null) {
-                    LOG.warn("Could not decode image " + imageUrl);
-                    continue;
-                }
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            try {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                client.download(imageUrl, out);
 
                 ContentValues values = new ContentValues();
                 values.put(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, contactId);
@@ -133,12 +126,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             } catch (Exception e) {
                 LOG.warn("Could not insert photo", e);
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) { }
-                }
             }
         }
     }

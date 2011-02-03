@@ -47,16 +47,16 @@ public class APIClient {
         return parser.parseEmployees(data);
     }
 
-    public InputStream download(String path) throws IOException {
+    public void download(String path, ByteArrayOutputStream out) throws IOException {
         HttpGet request = new HttpGet("https://intranet.valtech.se" + path);
         LOG.debug("Downloading " + request.getURI());
         HttpResponse response = httpClient.execute(request);
         if (response.getStatusLine().getStatusCode() != 200) {
             response.getEntity().consumeContent();
             LOG.warn("Could not download path " + path + ", got status code " + response.getStatusLine().getStatusCode());
-            return null;
+            return;
         }
-        return response.getEntity().getContent();
+        response.getEntity().writeTo(out);
     }
 
     private String execteRequest(HttpUriRequest request) {

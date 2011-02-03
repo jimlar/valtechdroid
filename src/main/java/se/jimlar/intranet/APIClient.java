@@ -1,6 +1,5 @@
 package se.jimlar.intranet;
 
-import android.util.Log;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -15,59 +14,54 @@ import java.io.InputStream;
 import java.util.List;
 
 public class APIClient {
-    public static final Logger logger = new Logger(APIClient.class);
+    public static final Logger LOG = new Logger(APIClient.class);
 
-    private String username;
-    private String password;
     private final APIResponseParser parser;
+    private final DefaultHttpClient httpClient;
 
     public APIClient(String username, String password, APIResponseParser parser) {
-        this.username = username;
-        this.password = password;
         this.parser = parser;
+        httpClient = new DefaultHttpClient();
+        httpClient.getCredentialsProvider().setCredentials(new AuthScope("intranet.valtech.se", 443),
+                                                       new UsernamePasswordCredentials(username, password));
     }
 
     public boolean authenticate() {
-        DefaultHttpClient client = getHttpClient();
         HttpGet request = new HttpGet("https://intranet.valtech.se/api/employees/");
         try {
-            HttpResponse response = client.execute(request);
+            HttpResponse response = httpClient.execute(request);
             StatusLine status = response.getStatusLine();
-            logger.info("status.getStatusCode() = " + status.getStatusCode());
-            logger.info("status.getReasonPhrase() = " + status.getReasonPhrase());
+            LOG.info("status.getStatusCode() = " + status.getStatusCode());
+            LOG.info("status.getReasonPhrase() = " + status.getReasonPhrase());
             return status.getStatusCode() == 200;
 
         } catch (IOException e) {
-            logger.warn("Could not authenticate", e);
+            LOG.warn("Could not authenticate", e);
             return false;
         }
     }
 
     public List<Employee> getEmployees() {
-        DefaultHttpClient client = getHttpClient();
         HttpGet request = new HttpGet("https://intranet.valtech.se/api/employees/");
-        String data = execteRequest(client, request);
+        String data = execteRequest(request);
         return parser.parseEmployees(data);
     }
 
     public InputStream download(String path) throws IOException {
-        DefaultHttpClient client = getHttpClient();
         HttpGet request = new HttpGet("https://intranet.valtech.se" + path);
-        logger.debug("Downloading " + request.getURI());
-        HttpResponse response = client.execute(request);
+        LOG.debug("Downloading " + request.getURI());
+        HttpResponse response = httpClient.execute(request);
+        if (response.getStatusLine().getStatusCode() != 200) {
+            response.getEntity().consumeContent();
+            LOG.warn("Could not download path " + path + ", got status code " + response.getStatusLine().getStatusCode());
+            return null;
+        }
         return response.getEntity().getContent();
     }
 
-    private DefaultHttpClient getHttpClient() {
-        DefaultHttpClient client = new DefaultHttpClient();
-        client.getCredentialsProvider().setCredentials(new AuthScope("intranet.valtech.se", 443),
-                                                       new UsernamePasswordCredentials(username, password));
-        return client;
-    }
-
-    private String execteRequest(DefaultHttpClient client, HttpUriRequest request) {
+    private String execteRequest(HttpUriRequest request) {
         try {
-            HttpResponse response = client.execute(request);
+            HttpResponse response = httpClient.execute(request);
 
             StatusLine status = response.getStatusLine();
             if (status.getStatusCode() != 200) {
@@ -86,9 +80,8 @@ public class APIClient {
 
             return new String(content.toByteArray());
         } catch (IOException e) {
-            logger.warn("Problem communicating with API", e);
+            LOG.warn("Problem communicating with API", e);
             throw new RuntimeException("Problem communicating with API", e);
         }
     }
-
 }

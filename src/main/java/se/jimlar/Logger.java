@@ -15,6 +15,10 @@ public class Logger {
         android.util.Log.i(tag, msg);
     }
 
+    public void warn(String msg) {
+        android.util.Log.w(tag, msg);
+    }
+
     public void warn(String msg, Throwable throwable) {
         android.util.Log.w(tag, msg, throwable);
     }
@@ -22,4 +26,5 @@ public class Logger {
     public void error(String msg, Throwable throwable) {
         android.util.Log.e(tag, msg, throwable);
     }
+
 }

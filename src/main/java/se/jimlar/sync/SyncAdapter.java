@@ -16,6 +16,7 @@ import se.jimlar.intranet.APIResponseParser;
 import se.jimlar.intranet.Employee;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +60,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             LOG.debug("Found employee: " + employee.getEmail());
 
 //            i++;
-//            if (i > 1) {
-//                Log.d(LOG_TAG, "Breaking import");
+//            if (i > 10) {
+//                LOG.debug("Breaking import");
 //                break;
 //            }
 
@@ -80,9 +81,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
 
-//        insertPhotos(account, client);
-//
-//
+        insertPhotos(account, client);
+
+
 //        dumpTable(ContactsContract.Data.CONTENT_URI, null);
 //        dumpTable(ContactsContract.Groups.CONTENT_URI, null);
 //        dumpTable(ContactsContract.RawContacts.CONTENT_URI, null);
@@ -91,14 +92,11 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     private void insertPhotos(Account account, APIClient client) {
 
         //
-        //TODO: store the contact image
-        //
         // Seems like most people use a second (async) pass to download the photos
         // - How to stream it: http://developer.android.com/reference/android/content/ContentResolver.html#openOutputStream(android.net.Uri)
         // - Batch example: http://efreedom.com/Question/1-3234386/Android-Batch-Insert-Contact-Photo
         // - Store progress/state in the sync metadata: http://developer.android.com/reference/android/provider/ContactsContract.CommonDataKinds.Photo.html
         //
-        // NOTE: intranet photos seem to require authentication, need to fix that
         //
 
         Cursor cursor = context.getContentResolver().query(ContactsContract.RawContacts.CONTENT_URI,
@@ -111,13 +109,20 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             long contactId = cursor.getLong(0);
             String imageUrl = cursor.getString(1);
 
+            InputStream in = null;
             try {
-                InputStream in = client.download(imageUrl);
+                in = client.download(imageUrl);
+                if (in == null) {
+                    continue;
+                }
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
 
                 Bitmap bitmap = BitmapFactory.decodeStream(in);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 75, out);
-                in.close();
+                if (bitmap == null) {
+                    LOG.warn("Could not decode image " + imageUrl);
+                    continue;
+                }
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
 
                 ContentValues values = new ContentValues();
                 values.put(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, contactId);
@@ -128,6 +133,12 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             } catch (Exception e) {
                 LOG.warn("Could not insert photo", e);
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) { }
+                }
             }
         }
     }

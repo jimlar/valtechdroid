@@ -7,6 +7,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import se.jimlar.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,6 +15,8 @@ import java.io.InputStream;
 import java.util.List;
 
 public class APIClient {
+    public static final Logger logger = new Logger(APIClient.class);
+
     private String username;
     private String password;
     private final APIResponseParser parser;
@@ -30,12 +33,12 @@ public class APIClient {
         try {
             HttpResponse response = client.execute(request);
             StatusLine status = response.getStatusLine();
-            Log.i("API", "status.getStatusCode() = " + status.getStatusCode());
-            Log.i("API", "status.getReasonPhrase() = " + status.getReasonPhrase());
+            logger.info("status.getStatusCode() = " + status.getStatusCode());
+            logger.info("status.getReasonPhrase() = " + status.getReasonPhrase());
             return status.getStatusCode() == 200;
 
         } catch (IOException e) {
-            Log.w("API", "Could not authenticate", e);
+            logger.warn("Could not authenticate", e);
             return false;
         }
     }
@@ -50,7 +53,7 @@ public class APIClient {
     public InputStream download(String path) throws IOException {
         DefaultHttpClient client = getHttpClient();
         HttpGet request = new HttpGet("https://intranet.valtech.se" + path);
-        Log.d("API", "Downloading " + request.getURI());
+        logger.debug("Downloading " + request.getURI());
         HttpResponse response = client.execute(request);
         return response.getEntity().getContent();
     }
@@ -83,6 +86,7 @@ public class APIClient {
 
             return new String(content.toByteArray());
         } catch (IOException e) {
+            logger.warn("Problem communicating with API", e);
             throw new RuntimeException("Problem communicating with API", e);
         }
     }

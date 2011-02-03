@@ -9,20 +9,19 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.util.Log;
+import se.jimlar.Logger;
 import se.jimlar.R;
 import se.jimlar.intranet.APIClient;
 import se.jimlar.intranet.APIResponseParser;
 import se.jimlar.intranet.Employee;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 class SyncAdapter extends AbstractThreadedSyncAdapter {
-    private static final String LOG_TAG = SyncAdapter.class.getName();
+    private static final Logger LOG = new Logger(SyncAdapter.class);
     private Context context;
     private AccountManager accountManager;
 
@@ -34,14 +33,17 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+        LOG.debug("Starting sync");
         try {
             String authToken = accountManager.blockingGetAuthToken(account, context.getString(R.string.ACCOUNT_TYPE), true);
             APIClient client = new APIClient(account.name, authToken, new APIResponseParser());
             List<Employee> employees = client.getEmployees();
             storeEmployees(employees, account, client);
 
+            LOG.debug("Sync done");
+
         } catch (Exception e) {
-            Log.w(LOG_TAG, "Sync failed", e);
+            LOG.warn("Sync failed", e);
         }
     }
 
@@ -54,7 +56,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         int i = 0;
         for (Employee employee : employees) {
-            Log.d(LOG_TAG, "Found employee: " + employee.getEmail());
+            LOG.debug("Found employee: " + employee.getEmail());
 
 //            i++;
 //            if (i > 1) {
@@ -64,7 +66,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             String phone = employee.getMobilePhone();
             if (phone == null) {
-                Log.d(LOG_TAG, "No phone number for employee, skipped sync");
+                LOG.debug("No phone number for employee, skipped sync");
 
             } else {
                 storeEmployee(employee, groupId, account, batch);
@@ -74,7 +76,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, batch);
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Exception encountered while running sync batch: " + e);
+            LOG.error("Exception encountered while running sync batch", e);
         }
 
 
@@ -125,7 +127,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 context.getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
 
             } catch (Exception e) {
-                Log.w(LOG_TAG, "Could not insert photo", e);
+                LOG.warn("Could not insert photo", e);
             }
         }
     }
@@ -227,8 +229,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void dumpTable(Uri contentUri, String selection) {
-        Log.d("DUMP", contentUri.toString());
-        Log.d("DUMP", "-------------------------");
+        LOG.debug(contentUri.toString());
+        LOG.debug("-------------------------");
         Cursor cursor = context.getContentResolver().query(contentUri, null, selection, null, null);
 
         int columns = cursor.getColumnCount();
@@ -237,9 +239,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             for (int i = 0; i < columns; i++) {
                 data += cursor.getColumnName(i) + ": " + cursor.getString(i) + ", ";
             }
-            Log.d("DATA", data);
+            LOG.debug(data);
         }
         cursor.close();
-        Log.d("DUMP", "-------------------------");
+        LOG.debug("-------------------------");
     }
 }

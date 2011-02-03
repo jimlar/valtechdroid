@@ -26,3 +26,4 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Test password in the password dialog
 * Add organization to the contact
 * Fix the thumbnail path hack when the proper url is in the API
+* Manage former employees (use phone nr and date to discard old/renamed employees)

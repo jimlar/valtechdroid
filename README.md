@@ -25,5 +25,7 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Prevent added contacts from being synced to other places
 * Test password in the password dialog
 * Add organization to the contact
+* Save geolocation
+* Save status message
 * Fix the thumbnail path hack when the proper url is in the API
 * Manage former employees (use phone nr and date to discard old/renamed employees)

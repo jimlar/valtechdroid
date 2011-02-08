@@ -1,11 +1,26 @@
 package se.jimlar.sync;
 
-public class StoredContact {
-    private final long contactId;
-    private final String sourceId;
+import se.jimlar.intranet.Employee;
 
-    public StoredContact(long contactId, String sourceId, String imageUrl) {
+import java.util.List;
+
+public class StoredContact {
+    public final long contactId;
+    public final long sourceId;
+    public final String imageUrl;
+
+    public StoredContact(long contactId, long sourceId, String imageUrl) {
         this.contactId = contactId;
         this.sourceId = sourceId;
+        this.imageUrl = imageUrl;
+    }
+
+    public boolean presentIn(List<Employee> employees) {
+        for (Employee employee : employees) {
+            if (employee.getUserId() == sourceId) {
+                return true;
+            }
+        }
+        return false;
     }
 }

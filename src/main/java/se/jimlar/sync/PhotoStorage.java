@@ -9,21 +9,20 @@ import se.jimlar.Logger;
 import se.jimlar.intranet.APIClient;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Collection;
 
 public class PhotoStorage {
     private static final Logger LOG = new Logger(PhotoStorage.class);
 
-    private final Account account;
     private final APIClient client;
     private final ContentResolver resolver;
 
-    public PhotoStorage(ContentResolver resolver, Account account, APIClient client) {
-        this.account = account;
+    public PhotoStorage(ContentResolver resolver, APIClient client) {
         this.client = client;
         this.resolver = resolver;
     }
 
-    public void syncPhotos() {
+    public void syncPhotos(Collection<StoredContact> storedContacts) {
 
         //
         // Seems like most people use a second (async) pass to download the photos
@@ -32,18 +31,10 @@ public class PhotoStorage {
         // - Store progress/state in the sync metadata: http://developer.android.com/reference/android/provider/ContactsContract.CommonDataKinds.Photo.html
         //
         //
-
-        Cursor cursor = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
-                                       new String[]{ContactsContract.RawContacts._ID, ContactsContract.RawContacts.SYNC1},
-                                       ContactsContract.Groups.ACCOUNT_NAME + " = ? AND " + ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
-                                       new String[]{account.name, account.type},
-                                       null);
-
-        while (cursor.moveToNext()) {
-            long contactId = cursor.getLong(0);
-            String imageUrl = cursor.getString(1);
+        for (StoredContact storedContact : storedContacts) {
 
             //TODO: remove this when the thumbnails are in the API properly
+            String imageUrl = storedContact.imageUrl;
             int i = imageUrl.lastIndexOf('.');
             imageUrl = imageUrl.substring(0, i) + ".thumbnail" + imageUrl.substring(i);
 
@@ -52,7 +43,7 @@ public class PhotoStorage {
                 client.download(imageUrl, out);
 
                 ContentValues values = new ContentValues();
-                values.put(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, contactId);
+                values.put(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, storedContact.contactId);
                 values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
                 values.put(ContactsContract.CommonDataKinds.Photo.PHOTO, out.toByteArray());
 

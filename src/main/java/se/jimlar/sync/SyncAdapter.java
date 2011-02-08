@@ -13,6 +13,7 @@ import se.jimlar.intranet.APIClient;
 import se.jimlar.intranet.APIResponseParser;
 import se.jimlar.intranet.Employee;
 
+import java.util.Collections;
 import java.util.List;
 
 class SyncAdapter extends AbstractThreadedSyncAdapter {
@@ -34,16 +35,18 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             APIClient client = new APIClient(account.name, authToken, new APIResponseParser());
             List<Employee> employees = client.getEmployees();
 
-            deleteAllContactsAndGroups();
-
             ContentResolver resolver = context.getContentResolver();
 
-            Long groupId = new GroupStorage(resolver, account).getOrCreateGroup();
+            GroupStorage groupStorage = new GroupStorage(resolver, account);
+            Long groupId = groupStorage.getOrCreateGroup();
 
             ContactStorage contactStorage = new ContactStorage(resolver, account, groupId);
+//            contactStorage.syncEmployees(Collections.<Employee>emptyList());
+
             contactStorage.syncEmployees(employees);
 
-            new PhotoStorage(resolver, account, client).syncPhotos();
+            PhotoStorage photoStorage = new PhotoStorage(resolver, client);
+            photoStorage.syncPhotos(contactStorage.getStoredContacts().values());
 
 //        dumpTable(ContactsContract.Data.CONTENT_URI, null);
 //        dumpTable(ContactsContract.Groups.CONTENT_URI, null);
@@ -54,12 +57,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (Exception e) {
             LOG.warn("Sync failed", e);
         }
-    }
-
-    private void deleteAllContactsAndGroups() {
-        LOG.warn("Removing all existing contacts and groups");
-        context.getContentResolver().delete(ContactsContract.RawContacts.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build(), null, null);
-        context.getContentResolver().delete(ContactsContract.Groups.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build(), null, null);
     }
 
     private void dumpTable(Uri contentUri, String selection) {

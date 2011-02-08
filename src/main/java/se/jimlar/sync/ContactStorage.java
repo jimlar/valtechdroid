@@ -3,15 +3,12 @@ package se.jimlar.sync;
 import android.accounts.Account;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import se.jimlar.Logger;
 import se.jimlar.intranet.Employee;
 
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ContactStorage {
     private static final Logger LOG = new Logger(ContactStorage.class);
@@ -29,28 +26,35 @@ public class ContactStorage {
     public void syncEmployees(List<Employee> employees) {
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
+        Map<Long, StoredContact> storedContacts = getStoredContacts();
+
+        //Insert missing ones
         for (Employee employee : employees) {
-            LOG.debug("Storing employee: " + employee.getEmail());
+            if (!storedContacts.containsKey(employee.getUserId()) && employee.hasPhone()) {
+                insertNewEmployee(employee, batch);
+            }
+        }
 
-            String phone = employee.getMobilePhone();
-            if (phone == null) {
-                LOG.debug("No phone number for employee, skipped sync");
 
-            } else {
-                storeEmployee(employee, groupId, account, batch);
+        //Update existing ones
+
+        //Delete removed ones
+        for (StoredContact storedContact : storedContacts.values()) {
+            if (!storedContact.presentIn(employees)) {
+                delete(storedContact, batch);
             }
         }
 
         try {
-            LOG.debug("Commiting batch");
+            LOG.debug("Committing batch");
             resolver.applyBatch(ContactsContract.AUTHORITY, batch);
         } catch (Exception e) {
             LOG.error("Exception encountered while running sync batch", e);
         }
     }
 
-    public List<StoredContact> getStoredContacts() {
-        List<StoredContact> result = new ArrayList<StoredContact>();
+    public Map<Long, StoredContact> getStoredContacts() {
+        Map<Long, StoredContact> result = new HashMap<Long, StoredContact>();
 
         Cursor cursor = null;
         try {
@@ -64,9 +68,9 @@ public class ContactStorage {
 
             while (cursor.moveToNext()) {
                 long contactId = cursor.getLong(0);
-                String sourceId = cursor.getString(1);
+                long sourceId = cursor.getLong(1);
                 String imageUrl = cursor.getString(2);
-                result.add(new StoredContact(contactId, sourceId, imageUrl));
+                result.put(sourceId, new StoredContact(contactId, sourceId, imageUrl));
             }
 
             return result;
@@ -78,7 +82,16 @@ public class ContactStorage {
     }
 
 
-    private void storeEmployee(Employee employee, Long groupId, Account account, ArrayList<ContentProviderOperation> batch) {
+    private void delete(StoredContact storedContact, List<ContentProviderOperation> batch) {
+        LOG.debug("Deleting stored contact: " + storedContact.contactId);
+        batch.add(ContentProviderOperation.newDelete(ContactsContract.RawContacts.CONTENT_URI.buildUpon()
+                                                             .appendPath(String.valueOf(storedContact.contactId))
+                                                             .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
+                                                             .build()).build());
+    }
+
+    private void insertNewEmployee(Employee employee, List<ContentProviderOperation> batch) {
+        LOG.debug("Inserting employee: " + employee.getEmail());
         int index = batch.size();
 
         batch.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)

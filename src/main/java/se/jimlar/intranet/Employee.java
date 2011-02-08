@@ -53,4 +53,8 @@ public class Employee {
     public String getWorkPhone() {
         return "+46 8 5622 " + getShortPhone();
     }
+
+    public boolean hasPhone() {
+        return getMobilePhone() != null;
+    }
 }

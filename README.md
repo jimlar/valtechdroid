@@ -28,3 +28,4 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Save geolocation
 * Save status message
 * Manage former employees (use phone nr and date to discard old/renamed employees)
+* Scale the contact image better

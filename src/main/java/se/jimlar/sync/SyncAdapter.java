@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import se.jimlar.Debugger;
 import se.jimlar.Logger;
 import se.jimlar.R;
 import se.jimlar.intranet.APIClient;
@@ -41,6 +42,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             Long groupId = groupStorage.getOrCreateGroup();
 
             ContactStorage contactStorage = new ContactStorage(resolver, account, groupId);
+
 //            contactStorage.syncEmployees(Collections.<Employee>emptyList());
 
             contactStorage.syncEmployees(employees);
@@ -48,31 +50,12 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             PhotoStorage photoStorage = new PhotoStorage(resolver, client);
             photoStorage.syncPhotos(contactStorage.getStoredContacts().values());
 
-//        dumpTable(ContactsContract.Data.CONTENT_URI, null);
-//        dumpTable(ContactsContract.Groups.CONTENT_URI, null);
-//        dumpTable(ContactsContract.RawContacts.CONTENT_URI, null);
+//            Debugger.dumpContactTables(context.getContentResolver());
 
             LOG.debug("Sync done");
 
         } catch (Exception e) {
             LOG.warn("Sync failed", e);
         }
-    }
-
-    private void dumpTable(Uri contentUri, String selection) {
-        LOG.debug(contentUri.toString());
-        LOG.debug("-------------------------");
-        Cursor cursor = context.getContentResolver().query(contentUri, null, selection, null, null);
-
-        int columns = cursor.getColumnCount();
-        while (cursor.moveToNext()) {
-            String data = "";
-            for (int i = 0; i < columns; i++) {
-                data += cursor.getColumnName(i) + ": " + cursor.getString(i) + ", ";
-            }
-            LOG.debug(data);
-        }
-        cursor.close();
-        LOG.debug("-------------------------");
     }
 }

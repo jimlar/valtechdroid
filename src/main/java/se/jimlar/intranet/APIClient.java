@@ -53,8 +53,7 @@ public class APIClient {
         HttpResponse response = httpClient.execute(request);
         if (response.getStatusLine().getStatusCode() != 200) {
             response.getEntity().consumeContent();
-            LOG.warn("Could not download path " + path + ", got status code " + response.getStatusLine().getStatusCode());
-            return;
+            throw new IOException("Could not download path " + path + ", got status code " + response.getStatusLine().getStatusCode());
         }
         response.getEntity().writeTo(out);
     }

@@ -25,8 +25,14 @@ public class ContactStorage {
 
     public void syncEmployees(List<Employee> employees) {
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
-
         Map<Long, StoredContact> storedContacts = getStoredContacts();
+
+        //Update existing ones
+        for (Employee employee : employees) {
+            if (storedContacts.containsKey(employee.getUserId())) {
+                updateEmployee(employee, batch);
+            }
+        }
 
         //Insert missing ones
         for (Employee employee : employees) {
@@ -34,9 +40,6 @@ public class ContactStorage {
                 insertNewEmployee(employee, batch);
             }
         }
-
-
-        //Update existing ones
 
         //Delete removed ones
         for (StoredContact storedContact : storedContacts.values()) {
@@ -61,7 +64,8 @@ public class ContactStorage {
             cursor = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
                                            new String[]{ContactsContract.RawContacts._ID,
                                                         ContactsContract.RawContacts.SOURCE_ID,
-                                                        ContactsContract.RawContacts.SYNC1},
+                                                        ContactsContract.RawContacts.SYNC1,
+                                                        ContactsContract.RawContacts.SYNC2},
                                            ContactsContract.Groups.ACCOUNT_NAME + " = ? AND " + ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
                                            new String[]{account.name, account.type},
                                            null);
@@ -70,7 +74,8 @@ public class ContactStorage {
                 long contactId = cursor.getLong(0);
                 long sourceId = cursor.getLong(1);
                 String imageUrl = cursor.getString(2);
-                result.put(sourceId, new StoredContact(contactId, sourceId, imageUrl));
+                String imageState = cursor.getString(3);
+                result.put(sourceId, new StoredContact(contactId, sourceId, imageUrl, imageState));
             }
 
             return result;
@@ -88,6 +93,10 @@ public class ContactStorage {
                                                              .appendPath(String.valueOf(storedContact.contactId))
                                                              .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
                                                              .build()).build());
+    }
+
+    private void updateEmployee(Employee employee, List<ContentProviderOperation> batch) {
+        LOG.debug("Updating employee: " + employee.getEmail());
     }
 
     private void insertNewEmployee(Employee employee, List<ContentProviderOperation> batch) {

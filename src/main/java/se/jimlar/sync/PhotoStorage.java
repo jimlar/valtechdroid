@@ -32,15 +32,9 @@ public class PhotoStorage {
         //
         //
         for (StoredContact storedContact : storedContacts) {
-
-            //TODO: remove this when the thumbnails are in the API properly
-            String imageUrl = storedContact.imageUrl;
-            int i = imageUrl.lastIndexOf('.');
-            imageUrl = imageUrl.substring(0, i) + ".thumbnail" + imageUrl.substring(i);
-
             try {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                client.download(imageUrl, out);
+                client.download(storedContact.imageUrl, out);
 
                 ContentValues values = new ContentValues();
                 values.put(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, storedContact.contactId);
@@ -48,6 +42,8 @@ public class PhotoStorage {
                 values.put(ContactsContract.CommonDataKinds.Photo.PHOTO, out.toByteArray());
 
                 resolver.insert(ContactsContract.Data.CONTENT_URI, values);
+
+                //TODO: mark the image as downloaded
 
             } catch (Exception e) {
                 LOG.warn("Could not insert photo", e);

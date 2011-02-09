@@ -19,7 +19,7 @@ public class APIResponseParser {
                                         object.getString("first_name"),
                                         object.getString("last_name"),
                                         object.getString("mobile"),
-                                        object.getString("image_url"),
+                                        object.getString("thumbnail_url"),
                                         object.getString("email")));
             }
 

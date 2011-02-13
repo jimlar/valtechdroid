@@ -52,6 +52,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 //            Debugger.dumpContactTables(context.getContentResolver());
 
             LOG.debug("Sync done");
+            syncResult.stats.
 
         } catch (Exception e) {
             LOG.warn("Sync failed", e);

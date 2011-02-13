@@ -32,3 +32,4 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Scale the contact image better
 * Handle passwords that start to fail in existing account setup
 * Edit password credentials
+* Use SyncStats to record the status of the sync execution

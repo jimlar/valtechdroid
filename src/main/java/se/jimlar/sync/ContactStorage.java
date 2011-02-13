@@ -3,12 +3,16 @@ package se.jimlar.sync;
 import android.accounts.Account;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import se.jimlar.Logger;
 import se.jimlar.intranet.Employee;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ContactStorage {
     private static final Logger LOG = new Logger(ContactStorage.class);
@@ -62,13 +66,13 @@ public class ContactStorage {
         Cursor cursor = null;
         try {
             cursor = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
-                                           new String[]{ContactsContract.RawContacts._ID,
-                                                        ContactsContract.RawContacts.SOURCE_ID,
-                                                        ContactsContract.RawContacts.SYNC1,
-                                                        ContactsContract.RawContacts.SYNC2},
-                                           ContactsContract.Groups.ACCOUNT_NAME + " = ? AND " + ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
-                                           new String[]{account.name, account.type},
-                                           null);
+                                    new String[]{ContactsContract.RawContacts._ID,
+                                                 ContactsContract.RawContacts.SOURCE_ID,
+                                                 ContactsContract.RawContacts.SYNC1,
+                                                 ContactsContract.RawContacts.SYNC2},
+                                    ContactsContract.Groups.ACCOUNT_NAME + " = ? AND " + ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
+                                    new String[]{account.name, account.type},
+                                    null);
 
             while (cursor.moveToNext()) {
                 long contactId = cursor.getLong(0);
@@ -103,6 +107,7 @@ public class ContactStorage {
         LOG.debug("Inserting employee: " + employee.getEmail());
         int index = batch.size();
 
+        /* Insert raw contact entry */
         batch.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                           .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type)
                           .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
@@ -111,35 +116,12 @@ public class ContactStorage {
                           .withValue(ContactsContract.RawContacts.SYNC2, "not_downloaded")
                           .build());
 
-        batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                          .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
-                          .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                          .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, employee.getFirstName() + " " + employee.getLastName())
-                          .build());
-        batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                          .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
-                          .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                          .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, employee.getMobilePhone())
-                          .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE)
-                          .build());
-        batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                          .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
-                          .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                          .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, employee.getShortPhone())
-                          .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_OTHER)
-                          .build());
-        batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                          .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
-                          .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                          .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, employee.getWorkPhone())
-                          .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
-                          .build());
-        batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                          .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
-                          .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                          .withValue(ContactsContract.CommonDataKinds.Email.DATA, employee.getEmail())
-                          .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
-                          .build());
+        /* Insert contact data */
+        batch.add(buildDataInsert(index, nameValues(employee)));
+        batch.add(buildDataInsert(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE, employee.getMobilePhone())));
+        batch.add(buildDataInsert(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_OTHER, employee.getShortPhone())));
+        batch.add(buildDataInsert(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK, employee.getWorkPhone())));
+        batch.add(buildDataInsert(index, emailValues(employee)));
 
         /* Add to the group */
         batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
@@ -147,5 +129,35 @@ public class ContactStorage {
                           .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE)
                           .withValue(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, groupId)
                           .build());
+    }
+
+    private ContentValues nameValues(Employee employee) {
+        ContentValues values = new ContentValues();
+        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
+        values.put(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, employee.getFirstName() + " " + employee.getLastName());
+        return values;
+    }
+
+    private ContentValues phoneValues(int phoneType, String phoneNumber) {
+        ContentValues values = new ContentValues();
+        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+        values.put(ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNumber);
+        values.put(ContactsContract.CommonDataKinds.Phone.TYPE, phoneType);
+        return values;
+    }
+
+    private ContentValues emailValues(Employee employee) {
+        ContentValues values = new ContentValues();
+        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE);
+        values.put(ContactsContract.CommonDataKinds.Email.DATA, employee.getEmail());
+        values.put(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK);
+        return values;
+    }
+
+    private ContentProviderOperation buildDataInsert(int contactInsertIndex, ContentValues values) {
+        return ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, contactInsertIndex)
+                .withValues(values)
+                .build();
     }
 }

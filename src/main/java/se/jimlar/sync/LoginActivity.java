@@ -7,12 +7,15 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import se.jimlar.R;
+import se.jimlar.intranet.APIClient;
+import se.jimlar.intranet.APIResponseParser;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
     private static final String LOG_TAG = LoginActivity.class.getName();
@@ -51,16 +54,18 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         private final String LOG_TAG = LoginTask.class.getName();
 
 		Context context;
-		ProgressDialog mDialog;
+		ProgressDialog progressDialog;
+        private Handler progressMessageHandler;
 
-		LoginTask(Context c) {
+		LoginTask(Context context) {
             Log.i(LOG_TAG, "create");
-			context = c;
+			this.context = context;
 			loginButton.setEnabled(false);
-
-			mDialog = ProgressDialog.show(c, "", getString(R.string.authenticating), true, false);
-			mDialog.setCancelable(true);
+            progressDialog = ProgressDialog.show(context, "", "Authenticating", true, true);
+            progressMessageHandler = new Handler();
 		}
+
+
 
 		@Override
 		public Boolean doInBackground(String... params) {
@@ -68,39 +73,55 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 			String user = params[0];
 			String pass = params[1];
 
-			// Do something internetty
 			try {
-				Thread.sleep(2000);
+                APIClient client = new APIClient(user, pass, new APIResponseParser());
+                if (!client.authenticate()) {
+                    updateProgress("Authentication falied");
+                    return false;
+                }
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+                return false;
 			}
 
-			Bundle result = null;
+            updateProgress("Creating account");
 			Account account = new Account(user, context.getString(R.string.ACCOUNT_TYPE));
 			AccountManager am = AccountManager.get(context);
             Log.i(LOG_TAG, "adding account");
             Bundle bundle = new Bundle();
             bundle.putString("stuff", "yup");
             if (am.addAccountExplicitly(account, pass, bundle)) {
-				result = new Bundle();
-				result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+                Bundle result = new Bundle();
+                result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
 				result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
 				result.putString(AccountManager.KEY_AUTHTOKEN, pass);
                 Log.i(LOG_TAG, "setting auth result");
 				setAccountAuthenticatorResult(result);
 				return true;
 			} else {
+                updateProgress("Failed to create account");
 				return false;
 			}
 		}
 
-		@Override
+        private void updateProgress(final String msg) {
+            progressMessageHandler.post(new Runnable() {
+                public void run() {
+                    progressDialog.setMessage(msg);
+                }
+            });
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) { }
+        }
+
+        @Override
 		public void onPostExecute(Boolean result) {
 			loginButton.setEnabled(true);
-			mDialog.dismiss();
-			if (result)
+            progressDialog.dismiss();
+			if (result) {
                 finish();
+            }
 		}
 	}
 }

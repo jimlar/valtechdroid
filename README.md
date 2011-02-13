@@ -19,10 +19,10 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Add the contacts to a group that is visible (instead of the null account type/name)
 * Add contact image
 * Test password in the password dialog
+* Update contact with changed/new info on consecutive executions
 
 ### Stuff ToDo
 * Find a way to do tests in Android that is not pure pain
-* Update contact with changed/new info on consecutive executions
 * Only update if needed
 * Prevent added contacts from being synced to other places
 * Add organization to the contact
@@ -30,5 +30,5 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Save status message
 * Manage former employees (use phone nr and date to discard old/renamed employees)
 * Scale the contact image better
-* Handle passwords that start to fail on existing setup
+* Handle passwords that start to fail in existing account setup
 * Edit password credentials

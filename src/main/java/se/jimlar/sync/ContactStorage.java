@@ -34,7 +34,7 @@ public class ContactStorage {
         //Update existing ones
         for (Employee employee : employees) {
             if (storedContacts.containsKey(employee.getUserId())) {
-                updateEmployee(employee, batch);
+                updateEmployee(employee, storedContacts.get(employee.getUserId()), batch);
             }
         }
 
@@ -93,14 +93,28 @@ public class ContactStorage {
 
     private void delete(StoredContact storedContact, List<ContentProviderOperation> batch) {
         LOG.debug("Deleting stored contact: " + storedContact.contactId);
+        batch.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI.buildUpon()
+                                                             .appendPath(String.valueOf(storedContact.contactId))
+                                                             .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
+                                                             .build()).build());
         batch.add(ContentProviderOperation.newDelete(ContactsContract.RawContacts.CONTENT_URI.buildUpon()
                                                              .appendPath(String.valueOf(storedContact.contactId))
                                                              .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
                                                              .build()).build());
     }
 
-    private void updateEmployee(Employee employee, List<ContentProviderOperation> batch) {
+    private void updateEmployee(Employee employee, StoredContact storedContact, List<ContentProviderOperation> batch) {
         LOG.debug("Updating employee: " + employee.getEmail());
+
+        /* Insert contact data */
+        batch.add(buildDataRemove(storedContact.contactId, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE));
+        batch.add(buildDataInsert(storedContact.contactId, nameValues(employee)));
+        batch.add(buildDataRemove(storedContact.contactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE));
+        batch.add(buildDataInsert(storedContact.contactId, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE, employee.getMobilePhone())));
+        batch.add(buildDataInsert(storedContact.contactId, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_OTHER, employee.getShortPhone())));
+        batch.add(buildDataInsert(storedContact.contactId, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK, employee.getWorkPhone())));
+        batch.add(buildDataRemove(storedContact.contactId, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE));
+        batch.add(buildDataInsert(storedContact.contactId, emailValues(employee)));
     }
 
     private void insertNewEmployee(Employee employee, List<ContentProviderOperation> batch) {
@@ -117,11 +131,11 @@ public class ContactStorage {
                           .build());
 
         /* Insert contact data */
-        batch.add(buildDataInsert(index, nameValues(employee)));
-        batch.add(buildDataInsert(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE, employee.getMobilePhone())));
-        batch.add(buildDataInsert(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_OTHER, employee.getShortPhone())));
-        batch.add(buildDataInsert(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK, employee.getWorkPhone())));
-        batch.add(buildDataInsert(index, emailValues(employee)));
+        batch.add(buildDataInsertWithBackReference(index, nameValues(employee)));
+        batch.add(buildDataInsertWithBackReference(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE, employee.getMobilePhone())));
+        batch.add(buildDataInsertWithBackReference(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_OTHER, employee.getShortPhone())));
+        batch.add(buildDataInsertWithBackReference(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK, employee.getWorkPhone())));
+        batch.add(buildDataInsertWithBackReference(index, emailValues(employee)));
 
         /* Add to the group */
         batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
@@ -154,10 +168,24 @@ public class ContactStorage {
         return values;
     }
 
-    private ContentProviderOperation buildDataInsert(int contactInsertIndex, ContentValues values) {
+    private ContentProviderOperation buildDataInsertWithBackReference(int contactInsertIndex, ContentValues values) {
         return ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, contactInsertIndex)
                 .withValues(values)
+                .build();
+    }
+
+    private ContentProviderOperation buildDataInsert(long contactId, ContentValues values) {
+        return ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValue(ContactsContract.Data.RAW_CONTACT_ID, contactId)
+                .withValues(values)
+                .build();
+    }
+
+    private ContentProviderOperation buildDataRemove(long contactId, String mimeType) {
+        return ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+                .withSelection(ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
+                               new String[]{String.valueOf(contactId), mimeType})
                 .build();
     }
 }

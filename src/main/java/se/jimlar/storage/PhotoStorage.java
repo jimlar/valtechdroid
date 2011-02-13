@@ -1,4 +1,4 @@
-package se.jimlar.sync;
+package se.jimlar.storage;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;

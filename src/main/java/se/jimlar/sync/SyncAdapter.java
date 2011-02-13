@@ -3,18 +3,16 @@ package se.jimlar.sync;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.*;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import se.jimlar.Debugger;
 import se.jimlar.Logger;
 import se.jimlar.R;
 import se.jimlar.intranet.APIClient;
 import se.jimlar.intranet.APIResponseParser;
 import se.jimlar.intranet.Employee;
+import se.jimlar.storage.ContactStorage;
+import se.jimlar.storage.GroupStorage;
+import se.jimlar.storage.PhotoStorage;
 
-import java.util.Collections;
 import java.util.List;
 
 class SyncAdapter extends AbstractThreadedSyncAdapter {

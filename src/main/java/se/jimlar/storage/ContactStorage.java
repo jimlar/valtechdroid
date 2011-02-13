@@ -1,4 +1,4 @@
-package se.jimlar.sync;
+package se.jimlar.storage;
 
 import android.accounts.Account;
 import android.content.ContentProviderOperation;

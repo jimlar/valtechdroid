@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import se.jimlar.Logger;
+
+import java.util.Arrays;
 
 class Authenticator extends AbstractAccountAuthenticator {
-    private static final String LOG_TAG = Authenticator.class.getName();
+    private static final Logger LOG = new Logger(Authenticator.class);
     private Context context;
 
     public Authenticator(Context context) {
@@ -27,19 +30,19 @@ class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account, Bundle options) {
-        Log.i(LOG_TAG, "confirmCredentials");
+        LOG.debug("confirmCredentials");
         return null;
     }
 
     @Override
     public Bundle editProperties(AccountAuthenticatorResponse response, String accountType) {
-        Log.i(LOG_TAG, "editProperties");
+        LOG.debug("editProperties");
         return null;
     }
 
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
-        Log.i(LOG_TAG, "getAuthToken, options: " + options);
+        LOG.debug("getAuthToken, options: " + options);
         Bundle bundle = new Bundle();
         bundle.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
         bundle.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
@@ -49,19 +52,19 @@ class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public String getAuthTokenLabel(String authTokenType) {
-        Log.i(LOG_TAG, "getAuthTokenLabel");
+        LOG.debug("getAuthTokenLabel");
         return null;
     }
 
     @Override
     public Bundle hasFeatures(AccountAuthenticatorResponse response, Account account, String[] features) throws NetworkErrorException {
-        Log.i(LOG_TAG, "hasFeatures: " + features);
+        LOG.debug("hasFeatures: " + Arrays.asList(features));
         return null;
     }
 
     @Override
     public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) {
-        Log.i(LOG_TAG, "updateCredentials");
+        LOG.debug("updateCredentials");
         return null;
     }
 }

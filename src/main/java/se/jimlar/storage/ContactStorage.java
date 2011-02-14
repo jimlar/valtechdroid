@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.SyncResult;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import se.jimlar.Logger;
@@ -27,7 +28,7 @@ public class ContactStorage {
         this.groupId = groupId;
     }
 
-    public void syncEmployees(List<Employee> employees) {
+    public void syncEmployees(List<Employee> employees, SyncResult syncResult) {
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
         Map<Long, StoredContact> storedContacts = getStoredContacts();
 
@@ -35,6 +36,8 @@ public class ContactStorage {
         for (Employee employee : employees) {
             if (storedContacts.containsKey(employee.getUserId())) {
                 updateEmployee(employee, storedContacts.get(employee.getUserId()), batch);
+                syncResult.stats.numUpdates++;
+                syncResult.stats.numEntries++;
             }
         }
 
@@ -42,6 +45,8 @@ public class ContactStorage {
         for (Employee employee : employees) {
             if (!storedContacts.containsKey(employee.getUserId()) && employee.hasPhone()) {
                 insertNewEmployee(employee, batch);
+                syncResult.stats.numInserts++;
+                syncResult.stats.numEntries++;
             }
         }
 
@@ -49,12 +54,15 @@ public class ContactStorage {
         for (StoredContact storedContact : storedContacts.values()) {
             if (!storedContact.presentIn(employees)) {
                 delete(storedContact, batch);
+                syncResult.stats.numDeletes++;
+                syncResult.stats.numEntries++;
             }
         }
 
         try {
             LOG.debug("Committing batch");
             resolver.applyBatch(ContactsContract.AUTHORITY, batch);
+
         } catch (Exception e) {
             LOG.error("Exception encountered while running sync batch", e);
         }

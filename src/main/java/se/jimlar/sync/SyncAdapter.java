@@ -44,7 +44,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 // This will delete all contacts
 //            contactStorage.syncEmployees(Collections.<Employee>emptyList());
 
-            contactStorage.syncEmployees(employees);
+            contactStorage.syncEmployees(employees, syncResult);
 
             PhotoStorage photoStorage = new PhotoStorage(resolver, client);
             photoStorage.syncPhotos(contactStorage.getStoredContacts().values());

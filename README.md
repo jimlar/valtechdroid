@@ -20,6 +20,7 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Add contact image
 * Test password in the password dialog
 * Update contact with changed/new info on consecutive executions
+* Use SyncStats to record the status of the sync execution
 
 ### Stuff ToDo
 * Find a way to do tests in Android that is not pure pain
@@ -32,4 +33,3 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Scale the contact image better
 * Handle passwords that start to fail in existing account setup
 * Edit password credentials
-* Use SyncStats to record the status of the sync execution

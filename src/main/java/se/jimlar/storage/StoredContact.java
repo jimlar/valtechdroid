@@ -37,6 +37,6 @@ public class StoredContact {
     }
 
     public boolean needsUpdate(Employee employee) {
-        return !employee.equals(employee);
+        return !this.employee.equals(employee);
     }
 }

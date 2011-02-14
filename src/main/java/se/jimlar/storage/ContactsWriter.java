@@ -86,6 +86,8 @@ public class ContactsWriter {
         long contactId = storedContact.getContactId();
         batch.add(buildDataRemove(contactId, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE));
         batch.add(buildDataInsert(contactId, nameValues(employee)));
+        batch.add(buildDataRemove(contactId, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE));
+        batch.add(buildDataInsert(contactId, organizationValues(employee)));
         batch.add(buildDataRemove(contactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE));
         batch.add(buildDataInsert(contactId, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE, employee.getMobilePhone())));
         batch.add(buildDataInsert(contactId, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_OTHER, employee.getShortPhone())));
@@ -109,6 +111,7 @@ public class ContactsWriter {
 
         /* Insert contact data */
         batch.add(buildDataInsertWithBackReference(index, nameValues(employee)));
+        batch.add(buildDataInsertWithBackReference(index, organizationValues(employee)));
         batch.add(buildDataInsertWithBackReference(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE, employee.getMobilePhone())));
         batch.add(buildDataInsertWithBackReference(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_OTHER, employee.getShortPhone())));
         batch.add(buildDataInsertWithBackReference(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK, employee.getWorkPhone())));
@@ -120,6 +123,14 @@ public class ContactsWriter {
                           .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE)
                           .withValue(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, groupId)
                           .build());
+    }
+
+    private ContentValues organizationValues(Employee employee) {
+        ContentValues values = new ContentValues();
+        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE);
+        values.put(ContactsContract.CommonDataKinds.Organization.COMPANY, "Valtech AB");
+        values.put(ContactsContract.CommonDataKinds.Organization.TITLE, employee.getTitle());
+        return values;
     }
 
     private ContentValues nameValues(Employee employee) {

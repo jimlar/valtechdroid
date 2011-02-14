@@ -20,7 +20,8 @@ public class APIResponseParser {
                                         object.getString("last_name"),
                                         object.getString("mobile"),
                                         object.getString("thumbnail_url"),
-                                        object.getString("email")));
+                                        object.getString("email"),
+                                        object.getString("title")));
             }
 
         } catch (JSONException e) {

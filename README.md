@@ -22,14 +22,15 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Update contact with changed/new info on consecutive executions
 * Use SyncStats to record the status of the sync execution
 * Only update if needed
+* Add organization to the contact
 
 ### Stuff ToDo
 * Find a way to do tests in Android that is not pure pain
 * Prevent added contacts from being synced to other places
-* Add organization to the contact
 * Save geolocation
 * Save status message
 * Manage former employees (use phone nr and date to discard old/renamed employees)
 * Scale the contact image better
 * Handle passwords that start to fail in existing account setup
 * Edit password credentials
+* Only update modified fields

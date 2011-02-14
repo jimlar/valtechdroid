@@ -7,14 +7,16 @@ public class Employee {
     private String imageUrl;
     private String email;
     private long userId;
+    private String title;
 
-    public Employee(long userId, String firstName, String lastName, String mobilePhone, String imageUrl, String email) {
+    public Employee(long userId, String firstName, String lastName, String mobilePhone, String imageUrl, String email, String title) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.mobilePhone = mobilePhone;
         this.imageUrl = imageUrl;
         this.email = email;
+        this.title = title;
     }
 
     public String getFirstName() {
@@ -54,6 +56,10 @@ public class Employee {
         return getMobilePhone() != null;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -68,6 +74,7 @@ public class Employee {
         if (lastName != null ? !lastName.equals(employee.lastName) : employee.lastName != null) return false;
         if (mobilePhone != null ? !mobilePhone.equals(employee.mobilePhone) : employee.mobilePhone != null)
             return false;
+        if (title != null ? !title.equals(employee.title) : employee.title != null) return false;
 
         return true;
     }
@@ -80,6 +87,7 @@ public class Employee {
         result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (int) (userId ^ (userId >>> 32));
+        result = 31 * result + (title != null ? title.hashCode() : 0);
         return result;
     }
 }

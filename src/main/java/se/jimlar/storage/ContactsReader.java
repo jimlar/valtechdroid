@@ -38,7 +38,7 @@ public class ContactsReader {
                 String imageUrl = cursor.getString(2);
                 String imageState = cursor.getString(3);
 
-                Employee employee = loadStoredEmployee(contactId, sourceId, imageUrl, resolver);
+                Employee employee = loadStoredEmployee(contactId, sourceId, imageUrl);
                 result.put(sourceId, new StoredContact(contactId, imageState, employee));
             }
 
@@ -50,17 +50,18 @@ public class ContactsReader {
         }
     }
 
-    private Employee loadStoredEmployee(long contactId, long sourceId, String imageUrl, ContentResolver resolver) {
-        String[] name = loadName(resolver, contactId);
+    private Employee loadStoredEmployee(long contactId, long sourceId, String imageUrl) {
+        String[] name = loadName(contactId);
         return new Employee(sourceId,
                             name[0],
                             name[1],
-                            loadMobilePhone(resolver, contactId),
+                            loadMobilePhone(contactId),
                             imageUrl,
-                            loadEmail(resolver, contactId));
+                            loadSingleColumn(contactId, ContactsContract.CommonDataKinds.Email.DATA, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE),
+                            loadSingleColumn(contactId, ContactsContract.CommonDataKinds.Organization.TITLE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE));
     }
 
-    private String[] loadName(ContentResolver resolver, long contactId) {
+    private String[] loadName(long contactId) {
         Cursor cursor = null;
         try {
             cursor = resolver.query(ContactsContract.Data.CONTENT_URI,
@@ -82,13 +83,13 @@ public class ContactsReader {
         }
     }
 
-    private String loadEmail(ContentResolver resolver, long contactId) {
+    private String loadSingleColumn(long contactId, String column, String itemMimeType) {
         Cursor cursor = null;
         try {
             cursor = resolver.query(ContactsContract.Data.CONTENT_URI,
-                                    new String[]{ContactsContract.CommonDataKinds.Email.DATA},
+                                    new String[]{column},
                                     ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.Data.CONTACT_ID + " = ?",
-                                    new String[]{ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE, String.valueOf(contactId)},
+                                    new String[]{itemMimeType, String.valueOf(contactId)},
                                     null);
 
             if (cursor.moveToNext()) {
@@ -103,7 +104,7 @@ public class ContactsReader {
         }
     }
 
-    private String loadMobilePhone(ContentResolver resolver, long contactId) {
+    private String loadMobilePhone(long contactId) {
         Cursor cursor = null;
         try {
             cursor = resolver.query(ContactsContract.Data.CONTENT_URI,

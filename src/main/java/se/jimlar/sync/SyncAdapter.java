@@ -31,11 +31,15 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             String authToken = accountManager.blockingGetAuthToken(account, context.getString(R.string.ACCOUNT_TYPE), true);
             APIClient client = new APIClient(account.name, authToken, new APIResponseParser());
+
+            LOG.debug("Downloading intranet data");
             List<Employee> employees = client.getEmployees();
 
             ContentResolver resolver = context.getContentResolver();
 
             GroupStorage groupStorage = new GroupStorage(resolver, account);
+
+            LOG.debug("Fetching/creating the sync adapter group");
             Long groupId = groupStorage.getOrCreateGroup();
 
             ContactsReader reader = new ContactsReader(resolver, account);
@@ -44,9 +48,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 // This will delete all contacts
 //            contactStorage.syncEmployees(Collections.<Employee>emptyList());
 
+            LOG.debug("Reading already stored contacts");
             Map<Long,StoredContact> storedContacts = reader.getStoredContacts();
+
+            LOG.debug("Updating stored contacts");
             writer.updateStoredContacts(storedContacts, employees, syncResult);
 
+            LOG.debug("Updating stored contact photos");
             PhotoStorage photoStorage = new PhotoStorage(resolver, client);
             photoStorage.syncPhotos(storedContacts.values());
 

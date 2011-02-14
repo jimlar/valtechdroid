@@ -4,12 +4,16 @@ import android.accounts.Account;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import android.util.Log;
+import se.jimlar.Logger;
 import se.jimlar.intranet.Employee;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ContactsReader {
+    private static final Logger LOG = new Logger(ContactsReader.class);
+
     private final ContentResolver resolver;
     private final Account account;
 
@@ -24,7 +28,7 @@ public class ContactsReader {
         Cursor cursor = null;
         try {
             cursor = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
-                                    new String[]{ContactsContract.RawContacts._ID,
+                                    new String[]{ContactsContract.RawContacts.CONTACT_ID,
                                                  ContactsContract.RawContacts.SOURCE_ID,
                                                  ContactsContract.RawContacts.SYNC1,
                                                  ContactsContract.RawContacts.SYNC2},
@@ -51,19 +55,7 @@ public class ContactsReader {
     }
 
     private Employee loadStoredEmployee(long contactId, long sourceId, String imageUrl) {
-        String[] name = loadMultiColumn(contactId,
-                                        ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
-                                        ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
-                                        ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME);
-
-
-        String[] status = loadMultiColumn(contactId,
-                                          ContactsContract.StatusUpdates.CONTENT_ITEM_TYPE,
-                                          ContactsContract.StatusUpdates.STATUS,
-                                          ContactsContract.StatusUpdates.STATUS_TIMESTAMP);
-
-        long statusTimeStamp = parseStatusTimeStamp(status[1]);
-
+        String[] name = loadName(contactId);
         return new Employee(sourceId,
                             name[0],
                             name[1],
@@ -71,28 +63,24 @@ public class ContactsReader {
                             imageUrl,
                             loadSingleColumn(contactId, ContactsContract.CommonDataKinds.Email.DATA, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE),
                             loadSingleColumn(contactId, ContactsContract.CommonDataKinds.Organization.TITLE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE),
-                            status[0],
-                            statusTimeStamp);
+                            null,
+                            -1);
     }
 
-    private long parseStatusTimeStamp(String status) {
-        try {
-            return Long.parseLong(status);
-        } catch (NumberFormatException e) { }
-        return 0;
-    }
-
-    private String[] loadMultiColumn(long contactId, String itemType, String... columns) {
+    private String[] loadName(long contactId) {
         Cursor cursor = null;
         try {
             cursor = resolver.query(ContactsContract.Data.CONTENT_URI,
-                                    columns,
+                                    new String[]{ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
+                                                 ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME},
                                     ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.Data.CONTACT_ID + " = ?",
-                                    new String[]{itemType, String.valueOf(contactId)},
+                                    new String[]{ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, String.valueOf(contactId)},
                                     null);
 
             if (cursor.moveToNext()) {
                 return new String[]{cursor.getString(0), cursor.getString(1)};
+            } else {
+                LOG.warn("Found no name for contact " + contactId);
             }
             return new String[]{null, null};
 
@@ -114,6 +102,8 @@ public class ContactsReader {
 
             if (cursor.moveToNext()) {
                 return cursor.getString(0);
+            } else {
+                LOG.warn("Found no data for column: " + column + ", mime: " + itemMimeType + ", contact: " + contactId);
             }
             return null;
 
@@ -139,6 +129,8 @@ public class ContactsReader {
 
             if (cursor.moveToNext()) {
                 return cursor.getString(0);
+            } else {
+                LOG.warn("Found no phone number for contact: " + contactId);
             }
             return null;
 

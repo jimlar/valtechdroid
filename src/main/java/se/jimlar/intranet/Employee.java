@@ -79,15 +79,12 @@ public class Employee {
 
         Employee employee = (Employee) o;
 
-        if (statusTimeStamp != employee.statusTimeStamp) return false;
         if (userId != employee.userId) return false;
         if (email != null ? !email.equals(employee.email) : employee.email != null) return false;
         if (firstName != null ? !firstName.equals(employee.firstName) : employee.firstName != null) return false;
         if (imageUrl != null ? !imageUrl.equals(employee.imageUrl) : employee.imageUrl != null) return false;
         if (lastName != null ? !lastName.equals(employee.lastName) : employee.lastName != null) return false;
         if (mobilePhone != null ? !mobilePhone.equals(employee.mobilePhone) : employee.mobilePhone != null)
-            return false;
-        if (statusMessage != null ? !statusMessage.equals(employee.statusMessage) : employee.statusMessage != null)
             return false;
         if (title != null ? !title.equals(employee.title) : employee.title != null) return false;
 
@@ -103,8 +100,21 @@ public class Employee {
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (int) (userId ^ (userId >>> 32));
         result = 31 * result + (title != null ? title.hashCode() : 0);
-        result = 31 * result + (statusMessage != null ? statusMessage.hashCode() : 0);
-        result = 31 * result + (int) (statusTimeStamp ^ (statusTimeStamp >>> 32));
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", mobilePhone='" + mobilePhone + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", email='" + email + '\'' +
+                ", userId=" + userId +
+                ", title='" + title + '\'' +
+                ", statusMessage='" + statusMessage + '\'' +
+                ", statusTimeStamp=" + statusTimeStamp +
+                '}';
     }
 }

@@ -45,19 +45,19 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             ContactsReader reader = new ContactsReader(resolver, account);
             ContactsWriter writer = new ContactsWriter(resolver, account, groupId);
 
-            LOG.debug("Reading already stored contacts");
-            Map<Long,StoredContact> storedContacts = reader.getStoredContacts();
+            LOG.debug("Reading stored contacts");
+            Map<Long, StoredContact> storedContacts = reader.getStoredContacts();
 
             LOG.debug("Updating stored contacts");
             writer.updateStoredContacts(storedContacts, employees, syncResult);
 
             LOG.debug("Updating statuses");
-//            StatusManager statusManager = new StatusManager(resolver);
-//            statusManager.syncStatuses(storedContacts, employees);
+            StatusManager statusManager = new StatusManager(resolver);
+            statusManager.syncStatuses(employees);
 
             LOG.debug("Updating stored contact photos");
-            PhotoStorage photoStorage = new PhotoStorage(resolver, client);
-            photoStorage.syncPhotos(storedContacts.values());
+            PhotoStorage photoStorage = new PhotoStorage(resolver, client, reader);
+            photoStorage.syncPhotos();
 
 //            Debugger.dumpContactTables(context.getContentResolver());
 

@@ -23,11 +23,19 @@ public class Debugger {
         while (cursor.moveToNext()) {
             String data = "";
             for (int i = 0; i < columns; i++) {
-                data += cursor.getColumnName(i) + ": " + cursor.getString(i) + ", ";
+                data += cursor.getColumnName(i) + ": " + getValueIgnoreErrors(cursor, i) + ", ";
             }
             LOG.debug(data);
         }
         cursor.close();
         LOG.debug("-------------------------");
+    }
+
+    private static String getValueIgnoreErrors(Cursor cursor, int i) {
+        try {
+            return cursor.getString(i);
+        } catch (Exception e) {
+            return "<unable to print>";
+        }
     }
 }

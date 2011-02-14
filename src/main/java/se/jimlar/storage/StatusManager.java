@@ -3,6 +3,7 @@ package se.jimlar.storage;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.provider.ContactsContract;
 import se.jimlar.Logger;
 import se.jimlar.intranet.Employee;
@@ -19,16 +20,20 @@ public class StatusManager {
         this.resolver = resolver;
     }
 
-    public void syncStatuses(Map<Long, StoredContact> storedContacts, List<Employee> employees) {
+    public void syncStatuses(List<Employee> employees) {
 
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
         for (Employee employee : employees) {
-            StoredContact storedContact = storedContacts.get(employee.getUserId());
 
             /* Insert status */
-            batch.add(ContentProviderOperation.newInsert(ContactsContract.StatusUpdates.CONTENT_URI)
-                              .withValues(statusValues(storedContact.getContactId(), employee))
-                              .build());
+            long profileId = lookupProfileDataId(employee);
+            if (profileId > 0) {
+                batch.add(ContentProviderOperation.newInsert(ContactsContract.StatusUpdates.CONTENT_URI)
+                                  .withValues(statusValues(profileId, employee))
+                                  .build());
+            } else {
+                LOG.warn("Found now profile data for " + employee.getEmail());
+            }
         }
 
         try {
@@ -39,10 +44,30 @@ public class StatusManager {
         }
     }
 
-    private ContentValues statusValues(long contactId, Employee employee) {
+    private long lookupProfileDataId(Employee employee) {
+
+        Cursor cursor = null;
+        try {
+            cursor = resolver.query(ContactsContract.Data.CONTENT_URI,
+                                          new String[]{ContactsContract.Data._ID},
+                                          ContactsContract.Data.MIMETYPE + "='" + ValtechProfile.CONTENT_ITEM_TYPE + "' AND " + ValtechProfile.PROFILE_ID + "=?",
+                                          new String[]{String.valueOf(employee.getUserId())},
+                                          null);
+            if (cursor.moveToNext()) {
+                return cursor.getLong(0);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return -1;
+    }
+
+    private ContentValues statusValues(long dataId, Employee employee) {
         ContentValues values = new ContentValues();
 
-//        values.put(ContactsContract.StatusUpdates.DATA_ID, profileId); //A _ID of a data row containing the "profile"
+        values.put(ContactsContract.StatusUpdates.DATA_ID, dataId);
         values.put(ContactsContract.StatusUpdates.STATUS, employee.getStatusMessage());
         values.put(ContactsContract.StatusUpdates.STATUS_TIMESTAMP, employee.getStatusTimeStamp());
         values.put(ContactsContract.StatusUpdates.PROTOCOL, ContactsContract.CommonDataKinds.Im.PROTOCOL_CUSTOM);

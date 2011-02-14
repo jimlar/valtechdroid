@@ -82,6 +82,9 @@ public class ContactsWriter {
     private void updateEmployee(Employee employee, StoredContact storedContact, List<ContentProviderOperation> batch) {
         LOG.debug("Updating employee: " + employee.getEmail());
 
+        LOG.debug("Old employee: " + storedContact.getEmployee());
+        LOG.debug("New employee: " + employee);
+
         /* Insert contact data */
         long contactId = storedContact.getContactId();
         batch.add(buildDataRemove(contactId, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE));
@@ -117,12 +120,21 @@ public class ContactsWriter {
         batch.add(buildDataInsertWithBackReference(index, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK, employee.getWorkPhone())));
         batch.add(buildDataInsertWithBackReference(index, emailValues(employee)));
 
+        batch.add(buildDataInsertWithBackReference(index, profileValues(employee)));
+
         /* Add to the group */
         batch.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                           .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, index)
                           .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE)
                           .withValue(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, groupId)
                           .build());
+    }
+
+    private ContentValues profileValues(Employee employee) {
+        ContentValues values = new ContentValues();
+        values.put(ContactsContract.Data.MIMETYPE, ValtechProfile.CONTENT_ITEM_TYPE);
+        values.put(ValtechProfile.PROFILE_ID, employee.getUserId());
+        return values;
     }
 
     private ContentValues organizationValues(Employee employee) {

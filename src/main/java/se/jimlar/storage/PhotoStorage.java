@@ -15,13 +15,17 @@ public class PhotoStorage {
 
     private final APIClient client;
     private final ContentResolver resolver;
+    private final ContactsReader reader;
 
-    public PhotoStorage(ContentResolver resolver, APIClient client) {
+    public PhotoStorage(ContentResolver resolver, APIClient client, ContactsReader reader) {
         this.client = client;
         this.resolver = resolver;
+        this.reader = reader;
     }
 
-    public void syncPhotos(Collection<StoredContact> storedContacts) {
+    public void syncPhotos() {
+        LOG.debug("Rereading stored contacts");
+        Collection<StoredContact> storedContacts = reader.getStoredContacts().values();
         for (StoredContact storedContact : storedContacts) {
             try {
                 if ("not_downloaded".equals(storedContact.getImageState())) {

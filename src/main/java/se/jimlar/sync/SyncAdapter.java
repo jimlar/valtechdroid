@@ -33,7 +33,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             APIClient client = new APIClient(account.name, authToken, new APIResponseParser());
 
             LOG.debug("Downloading intranet data");
-            List<Employee> employees = client.getEmployees();
+            List<Employee> employees = client.getEmployees().subList(0, 5);
 
             ContentResolver resolver = context.getContentResolver();
 
@@ -45,14 +45,15 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             ContactsReader reader = new ContactsReader(resolver, account);
             ContactsWriter writer = new ContactsWriter(resolver, account, groupId);
 
-// This will delete all contacts
-//            contactStorage.syncEmployees(Collections.<Employee>emptyList());
-
             LOG.debug("Reading already stored contacts");
             Map<Long,StoredContact> storedContacts = reader.getStoredContacts();
 
             LOG.debug("Updating stored contacts");
             writer.updateStoredContacts(storedContacts, employees, syncResult);
+
+            LOG.debug("Updating statuses");
+//            StatusManager statusManager = new StatusManager(resolver);
+//            statusManager.syncStatuses(storedContacts, employees);
 
             LOG.debug("Updating stored contact photos");
             PhotoStorage photoStorage = new PhotoStorage(resolver, client);

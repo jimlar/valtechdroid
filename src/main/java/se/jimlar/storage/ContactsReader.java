@@ -51,24 +51,44 @@ public class ContactsReader {
     }
 
     private Employee loadStoredEmployee(long contactId, long sourceId, String imageUrl) {
-        String[] name = loadName(contactId);
+        String[] name = loadMultiColumn(contactId,
+                                        ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
+                                        ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
+                                        ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME);
+
+
+        String[] status = loadMultiColumn(contactId,
+                                          ContactsContract.StatusUpdates.CONTENT_ITEM_TYPE,
+                                          ContactsContract.StatusUpdates.STATUS,
+                                          ContactsContract.StatusUpdates.STATUS_TIMESTAMP);
+
+        long statusTimeStamp = parseStatusTimeStamp(status[1]);
+
         return new Employee(sourceId,
                             name[0],
                             name[1],
                             loadMobilePhone(contactId),
                             imageUrl,
                             loadSingleColumn(contactId, ContactsContract.CommonDataKinds.Email.DATA, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE),
-                            loadSingleColumn(contactId, ContactsContract.CommonDataKinds.Organization.TITLE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE));
+                            loadSingleColumn(contactId, ContactsContract.CommonDataKinds.Organization.TITLE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE),
+                            status[0],
+                            statusTimeStamp);
     }
 
-    private String[] loadName(long contactId) {
+    private long parseStatusTimeStamp(String status) {
+        try {
+            return Long.parseLong(status);
+        } catch (NumberFormatException e) { }
+        return 0;
+    }
+
+    private String[] loadMultiColumn(long contactId, String itemType, String... columns) {
         Cursor cursor = null;
         try {
             cursor = resolver.query(ContactsContract.Data.CONTENT_URI,
-                                    new String[]{ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
-                                                 ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME},
+                                    columns,
                                     ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.Data.CONTACT_ID + " = ?",
-                                    new String[]{ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, String.valueOf(contactId)},
+                                    new String[]{itemType, String.valueOf(contactId)},
                                     null);
 
             if (cursor.moveToNext()) {

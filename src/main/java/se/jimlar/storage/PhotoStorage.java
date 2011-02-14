@@ -22,14 +22,6 @@ public class PhotoStorage {
     }
 
     public void syncPhotos(Collection<StoredContact> storedContacts) {
-
-        //
-        // Seems like most people use a second (async) pass to download the photos
-        // - How to stream it: http://developer.android.com/reference/android/content/ContentResolver.html#openOutputStream(android.net.Uri)
-        // - Batch example: http://efreedom.com/Question/1-3234386/Android-Batch-Insert-Contact-Photo
-        // - Store progress/state in the sync metadata: http://developer.android.com/reference/android/provider/ContactsContract.CommonDataKinds.Photo.html
-        //
-        //
         for (StoredContact storedContact : storedContacts) {
             try {
                 if ("not_downloaded".equals(storedContact.getImageState())) {

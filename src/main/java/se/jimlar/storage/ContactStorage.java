@@ -34,8 +34,9 @@ public class ContactStorage {
 
         //Update existing ones
         for (Employee employee : employees) {
-            if (storedContacts.containsKey(employee.getUserId())) {
-                updateEmployee(employee, storedContacts.get(employee.getUserId()), batch);
+            StoredContact storedContact = storedContacts.get(employee.getUserId());
+            if (storedContact != null && storedContact.needsUpdate(employee)) {
+                updateEmployee(employee, storedContact, batch);
                 syncResult.stats.numUpdates++;
                 syncResult.stats.numEntries++;
             }
@@ -68,45 +69,15 @@ public class ContactStorage {
         }
     }
 
-    public Map<Long, StoredContact> getStoredContacts() {
-        Map<Long, StoredContact> result = new HashMap<Long, StoredContact>();
-
-        Cursor cursor = null;
-        try {
-            cursor = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
-                                    new String[]{ContactsContract.RawContacts._ID,
-                                                 ContactsContract.RawContacts.SOURCE_ID,
-                                                 ContactsContract.RawContacts.SYNC1,
-                                                 ContactsContract.RawContacts.SYNC2},
-                                    ContactsContract.Groups.ACCOUNT_NAME + " = ? AND " + ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
-                                    new String[]{account.name, account.type},
-                                    null);
-
-            while (cursor.moveToNext()) {
-                long contactId = cursor.getLong(0);
-                long sourceId = cursor.getLong(1);
-                String imageUrl = cursor.getString(2);
-                String imageState = cursor.getString(3);
-                result.put(sourceId, new StoredContact(contactId, sourceId, imageUrl, imageState));
-            }
-
-            return result;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
-
     private void delete(StoredContact storedContact, List<ContentProviderOperation> batch) {
-        LOG.debug("Deleting stored contact: " + storedContact.contactId);
+        long contactId = storedContact.getContactId();
+        LOG.debug("Deleting stored contact: " + contactId);
         batch.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI.buildUpon()
-                                                             .appendPath(String.valueOf(storedContact.contactId))
+                                                             .appendPath(String.valueOf(contactId))
                                                              .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
                                                              .build()).build());
         batch.add(ContentProviderOperation.newDelete(ContactsContract.RawContacts.CONTENT_URI.buildUpon()
-                                                             .appendPath(String.valueOf(storedContact.contactId))
+                                                             .appendPath(String.valueOf(contactId))
                                                              .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
                                                              .build()).build());
     }
@@ -115,14 +86,15 @@ public class ContactStorage {
         LOG.debug("Updating employee: " + employee.getEmail());
 
         /* Insert contact data */
-        batch.add(buildDataRemove(storedContact.contactId, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE));
-        batch.add(buildDataInsert(storedContact.contactId, nameValues(employee)));
-        batch.add(buildDataRemove(storedContact.contactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE));
-        batch.add(buildDataInsert(storedContact.contactId, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE, employee.getMobilePhone())));
-        batch.add(buildDataInsert(storedContact.contactId, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_OTHER, employee.getShortPhone())));
-        batch.add(buildDataInsert(storedContact.contactId, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK, employee.getWorkPhone())));
-        batch.add(buildDataRemove(storedContact.contactId, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE));
-        batch.add(buildDataInsert(storedContact.contactId, emailValues(employee)));
+        long contactId = storedContact.getContactId();
+        batch.add(buildDataRemove(contactId, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE));
+        batch.add(buildDataInsert(contactId, nameValues(employee)));
+        batch.add(buildDataRemove(contactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE));
+        batch.add(buildDataInsert(contactId, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE, employee.getMobilePhone())));
+        batch.add(buildDataInsert(contactId, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_OTHER, employee.getShortPhone())));
+        batch.add(buildDataInsert(contactId, phoneValues(ContactsContract.CommonDataKinds.Phone.TYPE_WORK, employee.getWorkPhone())));
+        batch.add(buildDataRemove(contactId, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE));
+        batch.add(buildDataInsert(contactId, emailValues(employee)));
     }
 
     private void insertNewEmployee(Employee employee, List<ContentProviderOperation> batch) {
@@ -157,6 +129,8 @@ public class ContactStorage {
         ContentValues values = new ContentValues();
         values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
         values.put(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, employee.getFirstName() + " " + employee.getLastName());
+        values.put(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, employee.getFirstName());
+        values.put(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, employee.getLastName());
         return values;
     }
 
@@ -195,5 +169,115 @@ public class ContactStorage {
                 .withSelection(ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
                                new String[]{String.valueOf(contactId), mimeType})
                 .build();
+    }
+
+    public Map<Long, StoredContact> getStoredContacts() {
+        Map<Long, StoredContact> result = new HashMap<Long, StoredContact>();
+
+        Cursor cursor = null;
+        try {
+            cursor = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
+                                    new String[]{ContactsContract.RawContacts._ID,
+                                                 ContactsContract.RawContacts.SOURCE_ID,
+                                                 ContactsContract.RawContacts.SYNC1,
+                                                 ContactsContract.RawContacts.SYNC2},
+                                    ContactsContract.Groups.ACCOUNT_NAME + " = ? AND " + ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
+                                    new String[]{account.name, account.type},
+                                    null);
+
+            while (cursor.moveToNext()) {
+                long contactId = cursor.getLong(0);
+                long sourceId = cursor.getLong(1);
+                String imageUrl = cursor.getString(2);
+                String imageState = cursor.getString(3);
+
+                Employee employee = loadStoredEmployee(contactId, sourceId, imageUrl, resolver);
+                result.put(sourceId, new StoredContact(contactId, imageState, employee));
+            }
+
+            return result;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private Employee loadStoredEmployee(long contactId, long sourceId, String imageUrl, ContentResolver resolver) {
+        String[] name = loadName(resolver, contactId);
+        return new Employee(sourceId,
+                            name[0],
+                            name[1],
+                            loadMobilePhone(resolver, contactId),
+                            imageUrl,
+                            loadEmail(resolver, contactId));
+    }
+
+    private String[] loadName(ContentResolver resolver, long contactId) {
+        Cursor cursor = null;
+        try {
+            cursor = resolver.query(ContactsContract.Data.CONTENT_URI,
+                                    new String[]{ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
+                                                 ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME},
+                                    ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.Data.CONTACT_ID + " = ?",
+                                    new String[]{ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, String.valueOf(contactId)},
+                                    null);
+
+            if (cursor.moveToNext()) {
+                return new String[] { cursor.getString(0), cursor.getString(1)};
+            }
+            return new String[] {null, null};
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private String loadEmail(ContentResolver resolver, long contactId) {
+        Cursor cursor = null;
+        try {
+            cursor = resolver.query(ContactsContract.Data.CONTENT_URI,
+                                    new String[]{ContactsContract.CommonDataKinds.Email.DATA},
+                                    ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.Data.CONTACT_ID + " = ?",
+                                    new String[]{ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE, String.valueOf(contactId)},
+                                    null);
+
+            if (cursor.moveToNext()) {
+                return cursor.getString(0);
+            }
+            return null;
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private String loadMobilePhone(ContentResolver resolver, long contactId) {
+        Cursor cursor = null;
+        try {
+            cursor = resolver.query(ContactsContract.Data.CONTENT_URI,
+                                    new String[]{ContactsContract.CommonDataKinds.Email.DATA},
+                                    ContactsContract.Data.MIMETYPE + " = ? AND "
+                                            + ContactsContract.Data.CONTACT_ID + " = ? AND "
+                                            + ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
+                                    new String[]{ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
+                                                 String.valueOf(contactId),
+                                                String.valueOf(ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE)},
+                                    null);
+
+            if (cursor.moveToNext()) {
+                return cursor.getString(0);
+            }
+            return null;
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 }

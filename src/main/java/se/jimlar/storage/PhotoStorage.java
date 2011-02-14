@@ -32,7 +32,7 @@ public class PhotoStorage {
         //
         for (StoredContact storedContact : storedContacts) {
             try {
-                if ("not_downloaded".equals(storedContact.imageState)) {
+                if ("not_downloaded".equals(storedContact.getImageState())) {
                     downloadAndInsertImage(storedContact);
                     markImageDownloaded(storedContact);
                 }
@@ -45,10 +45,10 @@ public class PhotoStorage {
 
     private void downloadAndInsertImage(StoredContact storedContact) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        client.download(storedContact.imageUrl, out);
+        client.download(storedContact.getEmployee().getImageUrl(), out);
 
         ContentValues values = new ContentValues();
-        values.put(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, storedContact.contactId);
+        values.put(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, storedContact.getContactId());
         values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
         values.put(ContactsContract.CommonDataKinds.Photo.PHOTO, out.toByteArray());
 
@@ -58,6 +58,6 @@ public class PhotoStorage {
     private void markImageDownloaded(StoredContact storedContact) {
         ContentValues values = new ContentValues();
         values.put(ContactsContract.RawContacts.SYNC2, "downloaded");
-        resolver.update(ContactsContract.RawContacts.CONTENT_URI,  values, ContactsContract.RawContacts._ID  + "=" + storedContact.contactId, null);
+        resolver.update(ContactsContract.RawContacts.CONTENT_URI,  values, ContactsContract.RawContacts._ID  + "=" + storedContact.getContactId(), null);
     }
 }

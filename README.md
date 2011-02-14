@@ -21,10 +21,10 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Test password in the password dialog
 * Update contact with changed/new info on consecutive executions
 * Use SyncStats to record the status of the sync execution
+* Only update if needed
 
 ### Stuff ToDo
 * Find a way to do tests in Android that is not pure pain
-* Only update if needed
 * Prevent added contacts from being synced to other places
 * Add organization to the contact
 * Save geolocation

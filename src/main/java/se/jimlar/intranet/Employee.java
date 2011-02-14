@@ -46,15 +46,40 @@ public class Employee {
         return userId;
     }
 
-    public boolean isDeleted() {
-        return false;
-    }
-
     public String getWorkPhone() {
         return "+46 8 5622 " + getShortPhone();
     }
 
     public boolean hasPhone() {
         return getMobilePhone() != null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Employee employee = (Employee) o;
+
+        if (userId != employee.userId) return false;
+        if (email != null ? !email.equals(employee.email) : employee.email != null) return false;
+        if (firstName != null ? !firstName.equals(employee.firstName) : employee.firstName != null) return false;
+        if (imageUrl != null ? !imageUrl.equals(employee.imageUrl) : employee.imageUrl != null) return false;
+        if (lastName != null ? !lastName.equals(employee.lastName) : employee.lastName != null) return false;
+        if (mobilePhone != null ? !mobilePhone.equals(employee.mobilePhone) : employee.mobilePhone != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = firstName != null ? firstName.hashCode() : 0;
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (mobilePhone != null ? mobilePhone.hashCode() : 0);
+        result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (int) (userId ^ (userId >>> 32));
+        return result;
     }
 }

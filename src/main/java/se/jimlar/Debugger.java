@@ -14,6 +14,10 @@ public class Debugger {
         dumpTable(contentResolver, ContactsContract.RawContacts.CONTENT_URI, null);
     }
 
+    public static void dumpTable(ContentResolver contentResolver, Uri contentUri) {
+        dumpTable(contentResolver, contentUri, null);
+    }
+
     public static void dumpTable(ContentResolver contentResolver, Uri contentUri, String selection) {
         LOG.debug(contentUri.toString());
         LOG.debug("-------------------------");

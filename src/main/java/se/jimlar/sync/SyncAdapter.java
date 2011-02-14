@@ -4,6 +4,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.*;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import se.jimlar.Debugger;
 import se.jimlar.Logger;
 import se.jimlar.R;
 import se.jimlar.intranet.APIClient;
@@ -59,7 +61,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             PhotoStorage photoStorage = new PhotoStorage(resolver, client, reader);
             photoStorage.syncPhotos();
 
-//            Debugger.dumpContactTables(context.getContentResolver());
+            Debugger.dumpTable(context.getContentResolver(), ContactsContract.StatusUpdates.CONTENT_URI);
 
             LOG.debug("Sync done");
 

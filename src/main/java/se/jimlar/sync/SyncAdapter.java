@@ -9,11 +9,10 @@ import se.jimlar.R;
 import se.jimlar.intranet.APIClient;
 import se.jimlar.intranet.APIResponseParser;
 import se.jimlar.intranet.Employee;
-import se.jimlar.storage.ContactStorage;
-import se.jimlar.storage.GroupStorage;
-import se.jimlar.storage.PhotoStorage;
+import se.jimlar.storage.*;
 
 import java.util.List;
+import java.util.Map;
 
 class SyncAdapter extends AbstractThreadedSyncAdapter {
     private static final Logger LOG = new Logger(SyncAdapter.class);
@@ -39,15 +38,17 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             GroupStorage groupStorage = new GroupStorage(resolver, account);
             Long groupId = groupStorage.getOrCreateGroup();
 
-            ContactStorage contactStorage = new ContactStorage(resolver, account, groupId);
+            ContactsReader reader = new ContactsReader(resolver, account);
+            ContactsWriter writer = new ContactsWriter(resolver, account, groupId);
 
 // This will delete all contacts
 //            contactStorage.syncEmployees(Collections.<Employee>emptyList());
 
-            contactStorage.syncEmployees(employees, syncResult);
+            Map<Long,StoredContact> storedContacts = reader.getStoredContacts();
+            writer.updateStoredContacts(storedContacts, employees, syncResult);
 
             PhotoStorage photoStorage = new PhotoStorage(resolver, client);
-            photoStorage.syncPhotos(contactStorage.getStoredContacts().values());
+            photoStorage.syncPhotos(storedContacts.values());
 
 //            Debugger.dumpContactTables(context.getContentResolver());
 

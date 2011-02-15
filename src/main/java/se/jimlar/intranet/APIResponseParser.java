@@ -8,6 +8,7 @@ import se.jimlar.Logger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class APIResponseParser {
@@ -27,7 +28,6 @@ public class APIResponseParser {
                 JSONObject object = array.getJSONObject(i);
                 long employeeId = object.getLong("id");
 
-                LOG.debug("Parsing employee " + employeeId);
                 JSONObject status = getJSONObject(object, "status");
 
                 String statusMessage = null;
@@ -51,7 +51,19 @@ public class APIResponseParser {
         } catch (JSONException e) {
             throw new RuntimeException("Could not parse data", e);
         }
+
+        assertUserIdsUnique(result);
+
         return result;
+    }
+
+    private void assertUserIdsUnique(List<Employee> result) {
+        HashSet<Long> userIds = new HashSet<Long>();
+        for (Employee employee : result) {
+            if (!userIds.add(employee.getUserId())) {
+                throw new RuntimeException("Duplicate user id from the intranet API: " + employee.getUserId());
+            }
+        }
     }
 
     private JSONObject getJSONObject(JSONObject object, String key) throws JSONException {

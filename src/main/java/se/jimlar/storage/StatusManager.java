@@ -25,6 +25,8 @@ public class StatusManager {
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
         for (Employee employee : employees) {
 
+            LOG.debug("Inserting new status for " + employee.getEmail());
+
             /* Insert status */
             long profileId = lookupProfileDataId(employee);
             if (profileId > 0) {
@@ -32,7 +34,7 @@ public class StatusManager {
                                   .withValues(statusValues(profileId, employee))
                                   .build());
             } else {
-                LOG.warn("Found now profile data for " + employee.getEmail());
+                LOG.warn("Found no profile data for " + employee.getEmail());
             }
         }
 
@@ -74,6 +76,7 @@ public class StatusManager {
         values.put(ContactsContract.StatusUpdates.CUSTOM_PROTOCOL, "ValtechIntranet");
         values.put(ContactsContract.StatusUpdates.IM_ACCOUNT, employee.getEmail());
         values.put(ContactsContract.StatusUpdates.IM_HANDLE, employee.getUserId());
+
 //        values.put(StatusUpdates.STATUS_RES_PACKAGE, context.getPackageName());
 //        values.put(StatusUpdates.STATUS_ICON, R.drawable.icon);
 //        values.put(StatusUpdates.STATUS_LABEL, R.string.label);

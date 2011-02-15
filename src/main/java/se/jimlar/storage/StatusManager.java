@@ -27,6 +27,9 @@ public class StatusManager {
 
             LOG.debug("Inserting new status for " + employee.getEmail());
 
+
+            /** Todo, check if status really need an update against stored SyncState timestamp */
+
             /* Insert status */
             long profileId = lookupProfileDataId(employee);
             if (profileId > 0) {

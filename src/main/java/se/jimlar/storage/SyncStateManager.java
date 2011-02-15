@@ -27,7 +27,7 @@ public class SyncStateManager {
         Cursor cursor = null;
         try {
             cursor = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
-                                    new String[]{ContactsContract.RawContacts.CONTACT_ID,
+                                    new String[]{ContactsContract.RawContacts._ID,
                                                  ContactsContract.RawContacts.SOURCE_ID,
                                                  ContactsContract.RawContacts.SYNC1,
                                                  ContactsContract.RawContacts.SYNC2,
@@ -68,6 +68,6 @@ public class SyncStateManager {
         values.put(ContactsContract.RawContacts.SYNC1, syncState.getPhotoUrl());
         values.put(ContactsContract.RawContacts.SYNC2, syncState.getPhotoState().name());
         values.put(ContactsContract.RawContacts.SYNC3, syncState.getLastStatusUpdate());
-        resolver.update(ContactsContract.RawContacts.CONTENT_URI,  values, ContactsContract.RawContacts.CONTACT_ID  + "=" + syncState.getContactId(), null);
+        resolver.update(ContactsContract.RawContacts.CONTENT_URI,  values, ContactsContract.RawContacts._ID  + "=" + syncState.getContactId(), null);
     }
 }

@@ -109,7 +109,7 @@ public class ContactsWriter {
                           .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
                           .withValue(ContactsContract.RawContacts.SOURCE_ID, employee.getUserId())
                           .withValue(ContactsContract.RawContacts.SYNC1, employee.getImageUrl())
-                          .withValue(ContactsContract.RawContacts.SYNC2, PhotoState.NOT_DOWNLOADED)
+                          .withValue(ContactsContract.RawContacts.SYNC2, PhotoState.NOT_DOWNLOADED.name())
                           .build());
 
         /* Insert contact data */

@@ -27,7 +27,7 @@ public class ContactsReader {
         Cursor cursor = null;
         try {
             cursor = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
-                                    new String[]{ContactsContract.RawContacts.CONTACT_ID,
+                                    new String[]{ContactsContract.RawContacts._ID,
                                                  ContactsContract.RawContacts.SOURCE_ID,
                                                  ContactsContract.RawContacts.SYNC1},
                                     ContactsContract.Groups.ACCOUNT_NAME + " = ? AND " + ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
@@ -70,7 +70,7 @@ public class ContactsReader {
             cursor = resolver.query(ContactsContract.Data.CONTENT_URI,
                                     new String[]{ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
                                                  ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME},
-                                    ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.Data.CONTACT_ID + " = ?",
+                                    ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.Data.RAW_CONTACT_ID + " = ?",
                                     new String[]{ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, String.valueOf(contactId)},
                                     null);
 
@@ -93,7 +93,7 @@ public class ContactsReader {
         try {
             cursor = resolver.query(ContactsContract.Data.CONTENT_URI,
                                     new String[]{column},
-                                    ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.Data.CONTACT_ID + " = ?",
+                                    ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.Data.RAW_CONTACT_ID + " = ?",
                                     new String[]{itemMimeType, String.valueOf(contactId)},
                                     null);
 
@@ -117,7 +117,7 @@ public class ContactsReader {
             cursor = resolver.query(ContactsContract.Data.CONTENT_URI,
                                     new String[]{ContactsContract.CommonDataKinds.Email.DATA},
                                     ContactsContract.Data.MIMETYPE + " = ? AND "
-                                            + ContactsContract.Data.CONTACT_ID + " = ? AND "
+                                            + ContactsContract.Data.RAW_CONTACT_ID + " = ? AND "
                                             + ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
                                     new String[]{ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
                                                  String.valueOf(contactId),

@@ -26,9 +26,11 @@ public class PhotoStorage {
         LOG.debug("Reading photo states");
         for (SyncState syncState : syncStateManager.getSyncStates()) {
             try {
-                if ("not_downloaded".equals(syncState.getPhotoState())) {
-                    downloadAndInsertImage(syncState);
-                    syncStateManager.saveSyncState(syncState.newPhotoState(PhotoState.DOWNLOADED));
+                switch (syncState.getPhotoState()) {
+                    case NOT_DOWNLOADED:
+                        downloadAndInsertImage(syncState);
+                        syncStateManager.saveSyncState(syncState.newPhotoState(PhotoState.DOWNLOADED));
+                        break;
                 }
 
             } catch (Exception e) {

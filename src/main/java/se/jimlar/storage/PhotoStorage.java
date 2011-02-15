@@ -8,29 +8,27 @@ import se.jimlar.intranet.APIClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
 
 public class PhotoStorage {
     private static final Logger LOG = new Logger(PhotoStorage.class);
 
     private final APIClient client;
     private final ContentResolver resolver;
-    private final ContactsReader reader;
+    private final SyncStateManager syncStateManager;
 
-    public PhotoStorage(ContentResolver resolver, APIClient client, ContactsReader reader) {
+    public PhotoStorage(ContentResolver resolver, APIClient client, SyncStateManager syncStateManager) {
         this.client = client;
         this.resolver = resolver;
-        this.reader = reader;
+        this.syncStateManager = syncStateManager;
     }
 
     public void syncPhotos() {
         LOG.debug("Reading photo states");
-        for (ImageState imageState : reader.getImageStates()) {
+        for (SyncState syncState : syncStateManager.getSyncStates()) {
             try {
-                if ("not_downloaded".equals(imageState.getState())) {
-                    downloadAndInsertImage(imageState);
-                    markImageDownloaded(imageState);
+                if ("not_downloaded".equals(syncState.getState())) {
+                    downloadAndInsertImage(syncState);
+                    syncStateManager.saveSyncState(syncState.imageDownloaded());
                 }
 
             } catch (Exception e) {
@@ -39,21 +37,15 @@ public class PhotoStorage {
         }
     }
 
-    private void downloadAndInsertImage(ImageState imageState) throws IOException {
+    private void downloadAndInsertImage(SyncState syncState) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        client.download(imageState.getImageUrl(), out);
+        client.download(syncState.getImageUrl(), out);
 
         ContentValues values = new ContentValues();
-        values.put(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, imageState.getContactId());
+        values.put(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, syncState.getContactId());
         values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
         values.put(ContactsContract.CommonDataKinds.Photo.PHOTO, out.toByteArray());
 
         resolver.insert(ContactsContract.Data.CONTENT_URI, values);
-    }
-
-    private void markImageDownloaded(ImageState imageState) {
-        ContentValues values = new ContentValues();
-        values.put(ContactsContract.RawContacts.SYNC2, "downloaded");
-        resolver.update(ContactsContract.RawContacts.CONTENT_URI,  values, ContactsContract.RawContacts.CONTACT_ID  + "=" + imageState.getContactId(), null);
     }
 }

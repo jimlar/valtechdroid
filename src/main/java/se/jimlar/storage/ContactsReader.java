@@ -4,13 +4,10 @@ import android.accounts.Account;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.ContactsContract;
-import android.util.Log;
 import se.jimlar.Logger;
 import se.jimlar.intranet.Employee;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ContactsReader {
@@ -24,36 +21,6 @@ public class ContactsReader {
         this.account = account;
     }
 
-    public List<ImageState> getImageStates() {
-
-        ArrayList<ImageState> result = new ArrayList<ImageState>();
-        Cursor cursor = null;
-        try {
-            cursor = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
-                                    new String[]{ContactsContract.RawContacts.CONTACT_ID,
-                                                 ContactsContract.RawContacts.SYNC1,
-                                                 ContactsContract.RawContacts.SYNC2},
-                                    ContactsContract.Groups.ACCOUNT_NAME + " = ? AND " + ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
-                                    new String[]{account.name, account.type},
-                                    null);
-
-            while (cursor.moveToNext()) {
-                long contactId = cursor.getLong(0);
-                String imageUrl = cursor.getString(1);
-                String imageState = cursor.getString(2);
-
-                result.add(new ImageState(contactId, imageUrl, imageState));
-            }
-
-            return result;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-    }
-
     public Map<Long, StoredContact> getStoredContacts() {
         Map<Long, StoredContact> result = new HashMap<Long, StoredContact>();
 
@@ -62,8 +29,7 @@ public class ContactsReader {
             cursor = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
                                     new String[]{ContactsContract.RawContacts.CONTACT_ID,
                                                  ContactsContract.RawContacts.SOURCE_ID,
-                                                 ContactsContract.RawContacts.SYNC1,
-                                                 ContactsContract.RawContacts.SYNC2},
+                                                 ContactsContract.RawContacts.SYNC1},
                                     ContactsContract.Groups.ACCOUNT_NAME + " = ? AND " + ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
                                     new String[]{account.name, account.type},
                                     null);
@@ -72,10 +38,9 @@ public class ContactsReader {
                 long contactId = cursor.getLong(0);
                 long sourceId = cursor.getLong(1);
                 String imageUrl = cursor.getString(2);
-                String imageState = cursor.getString(3);
 
                 Employee employee = loadStoredEmployee(contactId, sourceId, imageUrl);
-                result.put(sourceId, new StoredContact(contactId, imageState, employee));
+                result.put(sourceId, new StoredContact(contactId, employee));
             }
 
             return result;

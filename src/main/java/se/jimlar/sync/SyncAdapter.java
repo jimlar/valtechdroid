@@ -53,15 +53,16 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             LOG.debug("Updating stored contacts");
             writer.updateStoredContacts(storedContacts, employees, syncResult);
 
+            SyncStateManager syncStateManager = new SyncStateManager(resolver, account);
             LOG.debug("Updating statuses");
             StatusManager statusManager = new StatusManager(resolver);
             statusManager.syncStatuses(employees);
 
             LOG.debug("Updating stored contact photos");
-            PhotoStorage photoStorage = new PhotoStorage(resolver, client, reader);
+            PhotoStorage photoStorage = new PhotoStorage(resolver, client, syncStateManager);
             photoStorage.syncPhotos();
 
-            Debugger.dumpTable(context.getContentResolver(), ContactsContract.StatusUpdates.CONTENT_URI);
+//            Debugger.dumpTable(context.getContentResolver(), ContactsContract.StatusUpdates.CONTENT_URI);
 
             LOG.debug("Sync done");
 

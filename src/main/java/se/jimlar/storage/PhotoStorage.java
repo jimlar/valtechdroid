@@ -26,9 +26,9 @@ public class PhotoStorage {
         LOG.debug("Reading photo states");
         for (SyncState syncState : syncStateManager.getSyncStates()) {
             try {
-                if ("not_downloaded".equals(syncState.getState())) {
+                if ("not_downloaded".equals(syncState.getPhotoState())) {
                     downloadAndInsertImage(syncState);
-                    syncStateManager.saveSyncState(syncState.imageDownloaded());
+                    syncStateManager.saveSyncState(syncState.newPhotoState(PhotoState.DOWNLOADED));
                 }
 
             } catch (Exception e) {
@@ -39,7 +39,7 @@ public class PhotoStorage {
 
     private void downloadAndInsertImage(SyncState syncState) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        client.download(syncState.getImageUrl(), out);
+        client.download(syncState.getPhotoUrl(), out);
 
         ContentValues values = new ContentValues();
         values.put(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, syncState.getContactId());

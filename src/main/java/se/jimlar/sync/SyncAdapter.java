@@ -55,7 +55,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             SyncStateManager syncStateManager = new SyncStateManager(resolver, account);
             LOG.debug("Updating statuses");
-            StatusManager statusManager = new StatusManager(resolver);
+            StatusManager statusManager = new StatusManager(resolver, syncStateManager);
             statusManager.syncStatuses(employees);
 
             LOG.debug("Updating stored contact photos");

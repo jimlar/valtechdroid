@@ -2,28 +2,44 @@ package se.jimlar.storage;
 
 public class SyncState {
     private final long contactId;
-    private final String imageUrl;
-    private final String state;
+    private final long sourceId;
+    private final String photoUrl;
+    private final PhotoState photoState;
+    private long lastStatusUpdate;
 
-    public SyncState(long contactId, String imageUrl, String state) {
+    public SyncState(long contactId, long sourceId, String photoUrl, PhotoState photoState, long lastStatusUpdate) {
         this.contactId = contactId;
-        this.imageUrl = imageUrl;
-        this.state = state;
+        this.sourceId = sourceId;
+        this.photoUrl = photoUrl;
+        this.photoState = photoState;
+        this.lastStatusUpdate = lastStatusUpdate;
     }
 
     public long getContactId() {
         return contactId;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
-    public String getState() {
-        return state;
+    public PhotoState getPhotoState() {
+        return photoState;
     }
 
-    public SyncState imageDownloaded() {
-        return new SyncState(contactId, imageUrl, "downloaded");
+    public long getLastStatusUpdate() {
+        return lastStatusUpdate;
+    }
+
+    public long getSourceId() {
+        return sourceId;
+    }
+
+    public SyncState newPhotoState(PhotoState newState) {
+        return new SyncState(contactId, sourceId, photoUrl, newState, lastStatusUpdate);
+    }
+
+    public SyncState newStatusUpdateTimeStamp(long statusTimeStamp) {
+        return new SyncState(contactId, sourceId, photoUrl, photoState, statusTimeStamp);
     }
 }

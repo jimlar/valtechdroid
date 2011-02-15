@@ -9,35 +9,46 @@ import se.jimlar.Logger;
 import se.jimlar.intranet.Employee;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class StatusManager {
     private static final Logger LOG = new Logger(StatusManager.class);
     private final ContentResolver resolver;
+    private final SyncStateManager syncStateManager;
 
-    public StatusManager(ContentResolver resolver) {
+    public StatusManager(ContentResolver resolver, SyncStateManager syncStateManager) {
         this.resolver = resolver;
+        this.syncStateManager = syncStateManager;
     }
 
     public void syncStatuses(List<Employee> employees) {
 
+        Map<Long, SyncState> syncStateByUserId = new HashMap<Long, SyncState>();
+        for (SyncState state : syncStateManager.getSyncStates()) {
+            syncStateByUserId.put(state.getSourceId(), state);
+        }
+
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
         for (Employee employee : employees) {
 
-            LOG.debug("Inserting new status for " + employee.getEmail());
+            SyncState state = syncStateByUserId.get(employee.getUserId());
+            if (state.getLastStatusUpdate() != employee.getStatusTimeStamp()) {
 
+                LOG.debug("Inserting new status for " + employee.getEmail());
 
-            /** Todo, check if status really need an update against stored SyncState timestamp */
-
-            /* Insert status */
-            long profileId = lookupProfileDataId(employee);
-            if (profileId > 0) {
-                batch.add(ContentProviderOperation.newInsert(ContactsContract.StatusUpdates.CONTENT_URI)
-                                  .withValues(statusValues(profileId, employee))
-                                  .build());
+                long profileId = lookupProfileDataId(employee);
+                if (profileId > 0) {
+                    batch.add(ContentProviderOperation.newInsert(ContactsContract.StatusUpdates.CONTENT_URI)
+                                      .withValues(statusValues(profileId, employee))
+                                      .build());
+                    syncStateManager.saveSyncState(state.newStatusUpdateTimeStamp(employee.getStatusTimeStamp()));
+                } else {
+                    LOG.warn("Found no profile data for " + employee.getEmail());
+                }
             } else {
-                LOG.warn("Found no profile data for " + employee.getEmail());
+                LOG.debug("Status update not needed for " + employee.getEmail());
             }
         }
 
@@ -54,10 +65,10 @@ public class StatusManager {
         Cursor cursor = null;
         try {
             cursor = resolver.query(ContactsContract.Data.CONTENT_URI,
-                                          new String[]{ContactsContract.Data._ID},
-                                          ContactsContract.Data.MIMETYPE + "='" + ValtechProfile.CONTENT_ITEM_TYPE + "' AND " + ValtechProfile.PROFILE_ID + "=?",
-                                          new String[]{String.valueOf(employee.getUserId())},
-                                          null);
+                                    new String[]{ContactsContract.Data._ID},
+                                    ContactsContract.Data.MIMETYPE + "='" + ValtechProfile.CONTENT_ITEM_TYPE + "' AND " + ValtechProfile.PROFILE_ID + "=?",
+                                    new String[]{String.valueOf(employee.getUserId())},
+                                    null);
             if (cursor.moveToNext()) {
                 return cursor.getLong(0);
             }

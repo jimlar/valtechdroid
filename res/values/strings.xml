@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Valtech Intranet</string>
+    <string name="app_name">Valtech Sweden Contact Sync</string>
     <string name="ACCOUNT_TYPE">se.jimlar.sync.account</string>
     <string name="username">Username:</string>
     <string name="password">Password:</string>

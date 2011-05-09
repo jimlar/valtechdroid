@@ -1,17 +1,15 @@
-package se.jimlar.sync;
+package se.valtech.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.*;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import se.jimlar.Debugger;
-import se.jimlar.Logger;
-import se.jimlar.R;
-import se.jimlar.intranet.APIClient;
-import se.jimlar.intranet.APIResponseParser;
-import se.jimlar.intranet.Employee;
-import se.jimlar.storage.*;
+import se.valtech.Logger;
+import se.valtech.R;
+import se.valtech.intranet.APIClient;
+import se.valtech.intranet.APIResponseParser;
+import se.valtech.intranet.Employee;
+import se.valtech.storage.*;
 
 import java.util.List;
 import java.util.Map;

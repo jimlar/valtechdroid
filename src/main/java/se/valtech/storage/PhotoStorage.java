@@ -1,10 +1,10 @@
-package se.jimlar.storage;
+package se.valtech.storage;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.provider.ContactsContract;
-import se.jimlar.Logger;
-import se.jimlar.intranet.APIClient;
+import se.valtech.Logger;
+import se.valtech.intranet.APIClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

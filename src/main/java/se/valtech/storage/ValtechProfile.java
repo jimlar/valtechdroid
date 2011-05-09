@@ -1,4 +1,4 @@
-package se.jimlar.storage;
+package se.valtech.storage;
 
 import android.provider.ContactsContract;
 

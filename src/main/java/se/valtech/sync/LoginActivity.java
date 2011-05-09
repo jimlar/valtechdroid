@@ -1,4 +1,4 @@
-package se.jimlar.sync;
+package se.valtech.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -13,9 +13,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import se.jimlar.R;
-import se.jimlar.intranet.APIClient;
-import se.jimlar.intranet.APIResponseParser;
+import se.valtech.R;
+import se.valtech.intranet.APIClient;
+import se.valtech.intranet.APIResponseParser;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
     private static final String LOG_TAG = LoginActivity.class.getName();

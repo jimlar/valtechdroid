@@ -1,6 +1,6 @@
-package se.jimlar.storage;
+package se.valtech.storage;
 
-import se.jimlar.intranet.Employee;
+import se.valtech.intranet.Employee;
 
 import java.util.List;
 

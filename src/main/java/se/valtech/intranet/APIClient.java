@@ -1,4 +1,4 @@
-package se.jimlar.intranet;
+package se.valtech.intranet;
 
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
@@ -6,7 +6,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
-import se.jimlar.Logger;
+import se.valtech.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package se.jimlar;
+package se.valtech;
 
 public class Logger {
     private String tag;

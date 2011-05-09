@@ -1,4 +1,4 @@
-package se.jimlar;
+package se.valtech;
 
 import android.content.ContentResolver;
 import android.database.Cursor;

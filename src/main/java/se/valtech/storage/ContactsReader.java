@@ -1,11 +1,11 @@
-package se.jimlar.storage;
+package se.valtech.storage;
 
 import android.accounts.Account;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.ContactsContract;
-import se.jimlar.Logger;
-import se.jimlar.intranet.Employee;
+import se.valtech.Logger;
+import se.valtech.intranet.Employee;
 
 import java.util.HashMap;
 import java.util.Map;

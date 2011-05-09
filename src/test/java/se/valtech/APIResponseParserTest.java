@@ -1,9 +1,9 @@
-package se.jimlar;
+package se.valtech;
 
 import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
-import se.jimlar.intranet.APIResponseParser;
-import se.jimlar.intranet.Employee;
+import se.valtech.intranet.APIResponseParser;
+import se.valtech.intranet.Employee;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package se.jimlar.sync;
+package se.valtech.sync;
 
 import android.app.Service;
 import android.content.Intent;

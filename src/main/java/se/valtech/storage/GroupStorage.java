@@ -1,9 +1,8 @@
-package se.jimlar.storage;
+package se.valtech.storage;
 
 import android.accounts.Account;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 

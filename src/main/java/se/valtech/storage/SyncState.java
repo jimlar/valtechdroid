@@ -1,4 +1,4 @@
-package se.jimlar.storage;
+package se.valtech.storage;
 
 public class SyncState {
     private final long contactId;

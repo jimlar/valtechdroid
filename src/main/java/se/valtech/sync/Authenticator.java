@@ -1,11 +1,10 @@
-package se.jimlar.sync;
+package se.valtech.sync;
 
 import android.accounts.*;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import se.jimlar.Logger;
+import se.valtech.Logger;
 
 import java.util.Arrays;
 

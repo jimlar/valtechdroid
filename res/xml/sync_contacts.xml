@@ -1,5 +1,5 @@
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
     android:contentAuthority="com.android.contacts" 
-    android:accountType="se.jimlar.sync.account"
+    android:accountType="se.valtech.sync.account"
     android:supportsUploading="false"
 /> 

@@ -1,4 +1,4 @@
-package se.jimlar.intranet;
+package se.valtech.intranet;
 
 public class Employee {
     private String firstName;

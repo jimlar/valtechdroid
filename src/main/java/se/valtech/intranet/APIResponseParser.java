@@ -1,9 +1,9 @@
-package se.jimlar.intranet;
+package se.valtech.intranet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import se.jimlar.Logger;
+import se.valtech.Logger;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

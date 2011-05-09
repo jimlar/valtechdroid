@@ -42,3 +42,4 @@ The idea is that you will benefit from getting all types of phone numbers (short
   * Better screenshot
   * Better icon
 * se.jimlar -> se.valtech
+* Default enable sync

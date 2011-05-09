@@ -1,4 +1,4 @@
-package se.valtech;
+package se.valtech.androidsync;
 
 public class Logger {
     private String tag;

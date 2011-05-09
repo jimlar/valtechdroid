@@ -29,6 +29,7 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Remove the delete all option
 * Remove the org . role
 * Prevent added contacts from being synced to other places
+* se.jimlar -> se.valtech
 
  ### Stuff ToDo
 * Handle passwords that start to fail in existing account setup
@@ -41,5 +42,4 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Market:
   * Better screenshot
   * Better icon
-* se.jimlar -> se.valtech
 * Default enable sync

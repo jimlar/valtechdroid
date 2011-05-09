@@ -1,10 +1,10 @@
-package se.valtech.sync;
+package se.valtech.androidsync.sync;
 
 import android.accounts.*;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import se.valtech.Logger;
+import se.valtech.androidsync.Logger;
 
 import java.util.Arrays;
 

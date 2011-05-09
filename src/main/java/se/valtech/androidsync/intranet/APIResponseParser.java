@@ -1,9 +1,9 @@
-package se.valtech.intranet;
+package se.valtech.androidsync.intranet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import se.valtech.Logger;
+import se.valtech.androidsync.Logger;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

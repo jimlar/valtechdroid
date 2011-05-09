@@ -1,4 +1,4 @@
-package se.valtech.intranet;
+package se.valtech.androidsync.intranet;
 
 public class Employee {
     private String firstName;

@@ -1,4 +1,4 @@
-package se.valtech;
+package se.valtech.androidsync;
 
 import android.content.ContentResolver;
 import android.database.Cursor;

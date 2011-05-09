@@ -1,10 +1,10 @@
-package se.valtech.storage;
+package se.valtech.androidsync.storage;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.provider.ContactsContract;
-import se.valtech.Logger;
-import se.valtech.intranet.APIClient;
+import se.valtech.androidsync.Logger;
+import se.valtech.androidsync.intranet.APIClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

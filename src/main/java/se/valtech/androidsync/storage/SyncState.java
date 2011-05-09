@@ -1,4 +1,4 @@
-package se.valtech.storage;
+package se.valtech.androidsync.storage;
 
 public class SyncState {
     private final long contactId;

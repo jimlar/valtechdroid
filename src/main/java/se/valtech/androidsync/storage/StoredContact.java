@@ -1,6 +1,6 @@
-package se.valtech.storage;
+package se.valtech.androidsync.storage;
 
-import se.valtech.intranet.Employee;
+import se.valtech.androidsync.intranet.Employee;
 
 import java.util.List;
 

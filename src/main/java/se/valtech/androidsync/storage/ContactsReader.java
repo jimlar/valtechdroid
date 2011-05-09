@@ -1,11 +1,11 @@
-package se.valtech.storage;
+package se.valtech.androidsync.storage;
 
 import android.accounts.Account;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.ContactsContract;
-import se.valtech.Logger;
-import se.valtech.intranet.Employee;
+import se.valtech.androidsync.Logger;
+import se.valtech.androidsync.intranet.Employee;
 
 import java.util.HashMap;
 import java.util.Map;

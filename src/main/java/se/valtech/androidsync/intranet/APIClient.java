@@ -1,4 +1,4 @@
-package se.valtech.intranet;
+package se.valtech.androidsync.intranet;
 
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
@@ -6,7 +6,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
-import se.valtech.Logger;
+import se.valtech.androidsync.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

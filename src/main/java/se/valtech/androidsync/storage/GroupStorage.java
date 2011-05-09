@@ -1,4 +1,4 @@
-package se.valtech.storage;
+package se.valtech.androidsync.storage;
 
 import android.accounts.Account;
 import android.content.ContentResolver;

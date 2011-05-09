@@ -1,9 +1,9 @@
-package se.valtech;
+package se.valtech.androidsync.intranet;
 
 import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
-import se.valtech.intranet.APIResponseParser;
-import se.valtech.intranet.Employee;
+import se.valtech.androidsync.intranet.APIResponseParser;
+import se.valtech.androidsync.intranet.Employee;
 
 import java.io.IOException;
 import java.io.InputStream;

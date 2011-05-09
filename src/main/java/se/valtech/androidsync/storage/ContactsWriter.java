@@ -1,4 +1,4 @@
-package se.valtech.storage;
+package se.valtech.androidsync.storage;
 
 import android.accounts.Account;
 import android.content.ContentProviderOperation;
@@ -6,8 +6,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.SyncResult;
 import android.provider.ContactsContract;
-import se.valtech.Logger;
-import se.valtech.intranet.Employee;
+import se.valtech.androidsync.Logger;
+import se.valtech.androidsync.intranet.Employee;
 
 import java.util.ArrayList;
 import java.util.List;

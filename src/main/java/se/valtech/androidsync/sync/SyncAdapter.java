@@ -1,15 +1,15 @@
-package se.valtech.sync;
+package se.valtech.androidsync.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.*;
 import android.os.Bundle;
-import se.valtech.Logger;
-import se.valtech.R;
-import se.valtech.intranet.APIClient;
-import se.valtech.intranet.APIResponseParser;
-import se.valtech.intranet.Employee;
-import se.valtech.storage.*;
+import se.valtech.androidsync.Logger;
+import se.valtech.androidsync.R;
+import se.valtech.androidsync.intranet.APIClient;
+import se.valtech.androidsync.intranet.APIResponseParser;
+import se.valtech.androidsync.intranet.Employee;
+import se.valtech.androidsync.storage.*;
 
 import java.util.List;
 import java.util.Map;

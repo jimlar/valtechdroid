@@ -1,5 +1,5 @@
 # WARNING
-This stuff is not at all complete, and may very well delete all the contacts on your phone if installed and executed.
+Use with caution and remember to back up your contacts before you install/enable this app.
 
 **Use with caution!**
 
@@ -37,3 +37,8 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Save geolocation
 * Scale the contact image better
 * Only update modified fields
+* Better icons
+* Market:
+  * Better screenshot
+  * Better icon
+* se.jimlar -> se.valtech

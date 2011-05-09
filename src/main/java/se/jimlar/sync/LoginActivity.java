@@ -76,7 +76,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 			try {
                 APIClient client = new APIClient(user, pass, new APIResponseParser());
                 if (!client.authenticate()) {
-                    updateProgress("Authentication falied");
+                    updateProgress("Authentication failed");
                     return false;
                 }
 			} catch (Exception e) {

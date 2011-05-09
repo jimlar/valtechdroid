@@ -27,14 +27,13 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Save status message
 * Valtech icon
 * Remove the delete all option
+* Remove the org . role
+* Prevent added contacts from being synced to other places
 
  ### Stuff ToDo
-* Remove the org . role
-* Find a way to do tests in Android that is not pure pain
-* Prevent added contacts from being synced to other places
-* Save geolocation
-* Scale the contact image better
 * Handle passwords that start to fail in existing account setup
 * Edit password credentials
+* Find a way to do tests in Android that is not pure pain
+* Save geolocation
+* Scale the contact image better
 * Only update modified fields
-* "Auth falid"

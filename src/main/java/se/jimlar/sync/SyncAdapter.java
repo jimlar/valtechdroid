@@ -35,7 +35,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             APIClient client = new APIClient(account.name, authToken, new APIResponseParser());
 
             LOG.debug("Downloading intranet data");
-            List<Employee> employees = client.getEmployees().subList(0, 20);
+            List<Employee> employees = client.getEmployees();
 
             ContentResolver resolver = context.getContentResolver();
 

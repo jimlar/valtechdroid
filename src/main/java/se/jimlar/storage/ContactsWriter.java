@@ -15,6 +15,7 @@ import java.util.Map;
 
 public class ContactsWriter {
     private static final Logger LOG = new Logger(ContactsWriter.class);
+    private static final int MAX_BATCH_SIZE = 450;
 
     private final ContentResolver resolver;
     private final Account account;
@@ -36,6 +37,9 @@ public class ContactsWriter {
                 updateEmployee(employee, storedContact, batch);
                 syncResult.stats.numUpdates++;
                 syncResult.stats.numEntries++;
+                if (batch.size() >= MAX_BATCH_SIZE) {
+                    applyBatch(batch);
+                }
             }
         }
 
@@ -45,6 +49,9 @@ public class ContactsWriter {
                 insertNewEmployee(employee, batch);
                 syncResult.stats.numInserts++;
                 syncResult.stats.numEntries++;
+                if (batch.size() >= MAX_BATCH_SIZE) {
+                    applyBatch(batch);
+                }
             }
         }
 
@@ -54,9 +61,16 @@ public class ContactsWriter {
                 delete(storedContact, batch);
                 syncResult.stats.numDeletes++;
                 syncResult.stats.numEntries++;
+                if (batch.size() >= MAX_BATCH_SIZE) {
+                    applyBatch(batch);
+                }
             }
         }
 
+        applyBatch(batch);
+    }
+
+    private void applyBatch(ArrayList<ContentProviderOperation> batch) {
         try {
             LOG.debug("Committing batch");
             resolver.applyBatch(ContactsContract.AUTHORITY, batch);
@@ -64,6 +78,7 @@ public class ContactsWriter {
         } catch (Exception e) {
             LOG.error("Exception encountered while running sync batch", e);
         }
+        batch.clear();
     }
 
     private void delete(StoredContact storedContact, List<ContentProviderOperation> batch) {
@@ -141,7 +156,6 @@ public class ContactsWriter {
         ContentValues values = new ContentValues();
         values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE);
         values.put(ContactsContract.CommonDataKinds.Organization.COMPANY, "Valtech AB");
-        values.put(ContactsContract.CommonDataKinds.Organization.TITLE, employee.getTitle());
         return values;
     }
 

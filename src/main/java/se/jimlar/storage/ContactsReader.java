@@ -59,7 +59,6 @@ public class ContactsReader {
                             loadMobilePhone(contactId),
                             imageUrl,
                             loadSingleColumn(contactId, ContactsContract.CommonDataKinds.Email.DATA, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE),
-                            loadSingleColumn(contactId, ContactsContract.CommonDataKinds.Organization.TITLE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE),
                             null,
                             -1);
     }

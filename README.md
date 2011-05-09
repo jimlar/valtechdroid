@@ -25,8 +25,11 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Add organization to the contact
 * Keep status update history
 * Save status message
+* Valtech icon
+* Remove the delete all option
 
  ### Stuff ToDo
+* Remove the org . role
 * Find a way to do tests in Android that is not pure pain
 * Prevent added contacts from being synced to other places
 * Save geolocation

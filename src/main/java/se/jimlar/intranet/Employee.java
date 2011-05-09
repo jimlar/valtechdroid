@@ -7,18 +7,16 @@ public class Employee {
     private String imageUrl;
     private String email;
     private long userId;
-    private String title;
     private String statusMessage;
     private long statusTimeStamp;
 
-    public Employee(long userId, String firstName, String lastName, String mobilePhone, String imageUrl, String email, String title, String statusMessage, long statusTimeStamp) {
+    public Employee(long userId, String firstName, String lastName, String mobilePhone, String imageUrl, String email, String statusMessage, long statusTimeStamp) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.mobilePhone = mobilePhone;
         this.imageUrl = imageUrl;
         this.email = email;
-        this.title = title;
         this.statusMessage = statusMessage;
         this.statusTimeStamp = statusTimeStamp;
     }
@@ -60,10 +58,6 @@ public class Employee {
         return getMobilePhone() != null;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public String getStatusMessage() {
         return statusMessage;
     }
@@ -86,7 +80,6 @@ public class Employee {
         if (lastName != null ? !lastName.equals(employee.lastName) : employee.lastName != null) return false;
         if (mobilePhone != null ? !mobilePhone.equals(employee.mobilePhone) : employee.mobilePhone != null)
             return false;
-        if (title != null ? !title.equals(employee.title) : employee.title != null) return false;
 
         return true;
     }
@@ -99,7 +92,6 @@ public class Employee {
         result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (int) (userId ^ (userId >>> 32));
-        result = 31 * result + (title != null ? title.hashCode() : 0);
         return result;
     }
 
@@ -112,7 +104,6 @@ public class Employee {
                 ", imageUrl='" + imageUrl + '\'' +
                 ", email='" + email + '\'' +
                 ", userId=" + userId +
-                ", title='" + title + '\'' +
                 ", statusMessage='" + statusMessage + '\'' +
                 ", statusTimeStamp=" + statusTimeStamp +
                 '}';

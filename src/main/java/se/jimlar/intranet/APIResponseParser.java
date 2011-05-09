@@ -43,7 +43,6 @@ public class APIResponseParser {
                                         object.getString("mobile"),
                                         object.getString("thumbnail_url"),
                                         object.getString("email"),
-                                        object.getString("title"),
                                         statusMessage,
                                         statusTimeStamp));
             }

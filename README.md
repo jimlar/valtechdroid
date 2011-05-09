@@ -29,7 +29,9 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Remove the delete all option
 * Remove the org . role
 * Prevent added contacts from being synced to other places
-* se.jimlar -> se.valtech
+* se.jimlar -> se.valtech.androidsync
+* Market: Better screenshot
+* Default enable sync
 
  ### Stuff ToDo
 * Handle passwords that start to fail in existing account setup
@@ -39,7 +41,4 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Scale the contact image better
 * Only update modified fields
 * Better icons
-* Market:
-  * Better screenshot
-  * Better icon
-* Default enable sync
+* Market: Better icon

@@ -4,10 +4,12 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -95,8 +97,16 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
 				result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
 				result.putString(AccountManager.KEY_AUTHTOKEN, pass);
+
+                //Enable sync by default
+                Log.i(LOG_TAG, "enabling sync");
+                Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
+                ContentResolver.setIsSyncable(accounts[0], ContactsContract.AUTHORITY, 1);
+                ContentResolver.setSyncAutomatically(accounts[0], ContactsContract.AUTHORITY, true);
+
                 Log.i(LOG_TAG, "setting auth result");
 				setAccountAuthenticatorResult(result);
+
 				return true;
 			} else {
                 updateProgress("Failed to create account");

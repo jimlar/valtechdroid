@@ -3,9 +3,7 @@ package se.valtech.androidsync.widget;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
-import android.provider.ContactsContract;
 import android.widget.RemoteViews;
-import se.valtech.androidsync.Debugger;
 import se.valtech.androidsync.Logger;
 import se.valtech.androidsync.R;
 import se.valtech.androidsync.storage.StatusReader;
@@ -41,15 +39,21 @@ public class IntraStatusWidgetProvider extends AppWidgetProvider {
 */
 
         LOGGER.debug("Reading statuses");
-        Debugger.dumpTable(context.getContentResolver(), ContactsContract.StatusUpdates.CONTENT_URI);
-
         StatusReader reader = new StatusReader(context.getContentResolver());
-        List<StatusReader.Status> statuses = reader.getLatestStatuses(3);
+        List<StatusReader.Status> statuses = reader.getLatestStatuses(4);
 
-        LOGGER.debug("Updating widget statuses");
-        views.setTextViewText(R.id.statuswidgettext, "This is status! " + statuses);
+        LOGGER.debug("Updating " + statuses.size() + " widget statuses");
+        updateStatusLine(views, statuses, R.id.statuswidgettext1, 0);
+        views.setTextViewText(R.id.statuswidgettext2, statuses.get(1).status);
+        views.setTextViewText(R.id.statuswidgettext3, statuses.get(2).status);
+        views.setTextViewText(R.id.statuswidgettext4, statuses.get(3).status);
 
 
     }
 
+    private void updateStatusLine(RemoteViews views, List<StatusReader.Status> statuses, int line, int index) {
+        if (statuses.size() > index) {
+            views.setTextViewText(line, statuses.get(index).status);
+        }
+    }
 }

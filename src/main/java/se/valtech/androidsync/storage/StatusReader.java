@@ -28,8 +28,13 @@ public class StatusReader {
                                            ContactsContract.StatusUpdates.STATUS_TIMESTAMP + " DESC");
 
             while (cursor.moveToNext()) {
-                statuses.add(new Status(cursor.getString(0), cursor.getString(1), new Date(cursor.getLong(2))));
-                if (cursor.getPosition() >= num - 1) {
+                String dataId = cursor.getString(0);
+                String status = cursor.getString(1);
+                Date date = new Date(cursor.getLong(2));
+                if (status != null && !"".equals(status.trim())) {
+                    statuses.add(new Status(status, date));
+                }
+                if (statuses.size() >= num) {
                     break;
                 }
             }
@@ -43,19 +48,17 @@ public class StatusReader {
     }
 
     public static class Status {
-        public final String handle;
         public final String status;
         public final Date when;
 
-        public Status(String handle, String status, Date when) {
-            this.handle = handle;
+        public Status(String status, Date when) {
             this.status = status;
             this.when = when;
         }
 
         @Override
         public String toString() {
-            return handle + ": " + status;
+            return status;
         }
     }
 }

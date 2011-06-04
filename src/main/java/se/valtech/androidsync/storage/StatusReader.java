@@ -20,15 +20,15 @@ public class StatusReader {
         Cursor cursor = null;
         try {
             cursor = contentResolver.query(ContactsContract.StatusUpdates.CONTENT_URI,
-                                           new String[]{/*ContactsContract.StatusUpdates.IM_HANDLE,*/
+                                           new String[]{ContactsContract.StatusUpdates.DATA_ID,
                                                         ContactsContract.StatusUpdates.STATUS,
                                                         ContactsContract.StatusUpdates.STATUS_TIMESTAMP},
-                                           /*ContactsContract.StatusUpdates.CUSTOM_PROTOCOL + " = ?",*/ null,
-                                           /*new String[]{StatusSynchronizer.STATUS_PROTOCOL_ID},*/ null,
+                                           ContactsContract.StatusUpdates.STATUS_RES_PACKAGE + " = ?",
+                                           new String[] { "se.valtech.androidsync" },
                                            ContactsContract.StatusUpdates.STATUS_TIMESTAMP + " DESC");
 
             while (cursor.moveToNext()) {
-                statuses.add(new Status("", /*cursor.getString(0),*/ cursor.getString(0), new Date(cursor.getLong(1))));
+                statuses.add(new Status(cursor.getString(0), cursor.getString(1), new Date(cursor.getLong(2))));
                 if (cursor.getPosition() >= num - 1) {
                     break;
                 }

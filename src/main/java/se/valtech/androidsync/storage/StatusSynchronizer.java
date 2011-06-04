@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import se.valtech.androidsync.Logger;
+import se.valtech.androidsync.R;
 import se.valtech.androidsync.intranet.Employee;
 
 import java.util.ArrayList;
@@ -13,12 +14,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StatusManager {
-    private static final Logger LOG = new Logger(StatusManager.class);
+public class StatusSynchronizer {
+    private static final Logger LOG = new Logger(StatusSynchronizer.class);
+    public static final String STATUS_PROTOCOL_ID = "ValtechIntranet";
     private final ContentResolver resolver;
     private final SyncStateManager syncStateManager;
 
-    public StatusManager(ContentResolver resolver, SyncStateManager syncStateManager) {
+    public StatusSynchronizer(ContentResolver resolver, SyncStateManager syncStateManager) {
         this.resolver = resolver;
         this.syncStateManager = syncStateManager;
     }
@@ -33,22 +35,24 @@ public class StatusManager {
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
         for (Employee employee : employees) {
 
-            SyncState state = syncStateByUserId.get(employee.getUserId());
-            if (state.getLastStatusUpdate() != employee.getStatusTimeStamp()) {
+            if (employee.hasStatusMessage()) {
+                SyncState state = syncStateByUserId.get(employee.getUserId());
+                if (state.getLastStatusUpdate() != employee.getStatusTimeStamp()) {
 
-                LOG.debug("Inserting new status for " + employee.getEmail());
+                    LOG.debug("Inserting new status for " + employee.getEmail());
 
-                long profileId = lookupProfileDataId(employee);
-                if (profileId > 0) {
-                    batch.add(ContentProviderOperation.newInsert(ContactsContract.StatusUpdates.CONTENT_URI)
-                                      .withValues(statusValues(profileId, employee))
-                                      .build());
-                    syncStateManager.saveSyncState(state.newStatusUpdateTimeStamp(employee.getStatusTimeStamp()));
+                    long profileId = lookupProfileDataId(employee);
+                    if (profileId > 0) {
+                        batch.add(ContentProviderOperation.newInsert(ContactsContract.StatusUpdates.CONTENT_URI)
+                                          .withValues(statusValues(profileId, employee))
+                                          .build());
+                        syncStateManager.saveSyncState(state.newStatusUpdateTimeStamp(employee.getStatusTimeStamp()));
+                    } else {
+                        LOG.warn("Found no profile data for " + employee.getEmail());
+                    }
                 } else {
-                    LOG.warn("Found no profile data for " + employee.getEmail());
+                    LOG.debug("Status update not needed for " + employee.getEmail());
                 }
-            } else {
-                LOG.debug("Status update not needed for " + employee.getEmail());
             }
         }
 
@@ -86,14 +90,17 @@ public class StatusManager {
         values.put(ContactsContract.StatusUpdates.DATA_ID, dataId);
         values.put(ContactsContract.StatusUpdates.STATUS, employee.getStatusMessage());
         values.put(ContactsContract.StatusUpdates.STATUS_TIMESTAMP, employee.getStatusTimeStamp());
-        values.put(ContactsContract.StatusUpdates.PROTOCOL, ContactsContract.CommonDataKinds.Im.PROTOCOL_CUSTOM);
-        values.put(ContactsContract.StatusUpdates.CUSTOM_PROTOCOL, "ValtechIntranet");
-        values.put(ContactsContract.StatusUpdates.IM_ACCOUNT, employee.getEmail());
-        values.put(ContactsContract.StatusUpdates.IM_HANDLE, employee.getUserId());
 
-//        values.put(StatusUpdates.STATUS_RES_PACKAGE, context.getPackageName());
-//        values.put(StatusUpdates.STATUS_ICON, R.drawable.icon);
-//        values.put(StatusUpdates.STATUS_LABEL, R.string.label);
+        values.put(ContactsContract.StatusUpdates.STATUS_RES_PACKAGE, "se.valtech.androidsync");
+        values.put(ContactsContract.StatusUpdates.STATUS_ICON, R.drawable.icon);
+        values.put(ContactsContract.StatusUpdates.STATUS_LABEL, R.string.status_label);
+
+
+        /* Apparently you are supposed to put either the DATA_ID or the below in there */
+//        values.put(ContactsContract.StatusUpdates.PROTOCOL, ContactsContract.CommonDataKinds.Im.PROTOCOL_CUSTOM);
+//        values.put(ContactsContract.StatusUpdates.CUSTOM_PROTOCOL, STATUS_PROTOCOL_ID);
+//        values.put(ContactsContract.StatusUpdates.IM_ACCOUNT, employee.getEmail());
+//        values.put(ContactsContract.StatusUpdates.IM_HANDLE, employee.getUserId());
 
         return values;
     }

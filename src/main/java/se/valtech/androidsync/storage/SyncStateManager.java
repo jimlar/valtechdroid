@@ -1,24 +1,18 @@
 package se.valtech.androidsync.storage;
 
-import android.accounts.Account;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.provider.ContactsContract;
-import se.valtech.androidsync.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SyncStateManager {
-    private static final Logger LOG = new Logger(SyncStateManager.class);
-
     private final ContentResolver resolver;
-    private final Account account;
 
-    public SyncStateManager(ContentResolver resolver, Account account) {
+    public SyncStateManager(ContentResolver resolver) {
         this.resolver = resolver;
-        this.account = account;
     }
 
     public List<SyncState> getSyncStates() {
@@ -32,8 +26,8 @@ public class SyncStateManager {
                                                  ContactsContract.RawContacts.SYNC1,
                                                  ContactsContract.RawContacts.SYNC2,
                                                  ContactsContract.RawContacts.SYNC3},
-                                    ContactsContract.Groups.ACCOUNT_NAME + " = ? AND " + ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
-                                    new String[]{account.name, account.type},
+                                    ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
+                                    new String[]{ValtechProfile.ACCOUNT_TYPE},
                                     null);
 
             while (cursor.moveToNext()) {
@@ -68,6 +62,6 @@ public class SyncStateManager {
         values.put(ContactsContract.RawContacts.SYNC1, syncState.getPhotoUrl());
         values.put(ContactsContract.RawContacts.SYNC2, syncState.getPhotoState().name());
         values.put(ContactsContract.RawContacts.SYNC3, syncState.getLastStatusUpdate());
-        resolver.update(ContactsContract.RawContacts.CONTENT_URI,  values, ContactsContract.RawContacts._ID  + "=" + syncState.getContactId(), null);
+        resolver.update(ContactsContract.RawContacts.CONTENT_URI, values, ContactsContract.RawContacts._ID + "=" + syncState.getContactId(), null);
     }
 }

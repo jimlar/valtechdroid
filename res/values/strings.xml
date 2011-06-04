@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Valtech Sweden Contact Sync</string>
-    <string name="ACCOUNT_TYPE">se.valtech.androidsync.account</string>
     <string name="username">Username:</string>
     <string name="password">Password:</string>
     <string name="login">Login</string>
+    <string name="status_label">Valtech</string>
 </resources>

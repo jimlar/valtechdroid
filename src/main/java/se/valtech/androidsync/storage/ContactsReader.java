@@ -1,6 +1,5 @@
 package se.valtech.androidsync.storage;
 
-import android.accounts.Account;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.ContactsContract;
@@ -14,11 +13,9 @@ public class ContactsReader {
     private static final Logger LOG = new Logger(ContactsReader.class);
 
     private final ContentResolver resolver;
-    private final Account account;
 
-    public ContactsReader(ContentResolver resolver, Account account) {
+    public ContactsReader(ContentResolver resolver) {
         this.resolver = resolver;
-        this.account = account;
     }
 
     public Map<Long, StoredContact> getStoredContacts() {
@@ -30,8 +27,8 @@ public class ContactsReader {
                                     new String[]{ContactsContract.RawContacts._ID,
                                                  ContactsContract.RawContacts.SOURCE_ID,
                                                  ContactsContract.RawContacts.SYNC1},
-                                    ContactsContract.Groups.ACCOUNT_NAME + " = ? AND " + ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
-                                    new String[]{account.name, account.type},
+                                    ContactsContract.Groups.ACCOUNT_TYPE + " = ?",
+                                    new String[]{ValtechProfile.ACCOUNT_TYPE},
                                     null);
 
             while (cursor.moveToNext()) {

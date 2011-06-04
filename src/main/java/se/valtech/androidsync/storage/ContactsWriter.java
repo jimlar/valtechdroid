@@ -120,7 +120,7 @@ public class ContactsWriter {
 
         /* Insert raw contact entry */
         batch.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
-                          .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type)
+                          .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, ValtechProfile.ACCOUNT_TYPE)
                           .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
                           .withValue(ContactsContract.RawContacts.SOURCE_ID, employee.getUserId())
                           .withValue(ContactsContract.RawContacts.SYNC1, employee.getImageUrl())

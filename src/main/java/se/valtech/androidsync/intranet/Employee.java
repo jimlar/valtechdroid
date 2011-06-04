@@ -108,4 +108,8 @@ public class Employee {
                 ", statusTimeStamp=" + statusTimeStamp +
                 '}';
     }
+
+    public boolean hasStatusMessage() {
+        return statusMessage != null;
+    }
 }

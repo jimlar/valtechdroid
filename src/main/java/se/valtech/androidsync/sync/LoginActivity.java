@@ -18,6 +18,7 @@ import android.widget.EditText;
 import se.valtech.androidsync.R;
 import se.valtech.androidsync.intranet.APIClient;
 import se.valtech.androidsync.intranet.APIResponseParser;
+import se.valtech.androidsync.storage.ValtechProfile;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
     private static final String LOG_TAG = LoginActivity.class.getName();
@@ -87,7 +88,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 			}
 
             updateProgress("Creating account");
-			Account account = new Account(user, context.getString(R.string.ACCOUNT_TYPE));
+			Account account = new Account(user, ValtechProfile.ACCOUNT_TYPE);
 			AccountManager am = AccountManager.get(context);
             Log.i(LOG_TAG, "adding account");
             Bundle bundle = new Bundle();
@@ -95,12 +96,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             if (am.addAccountExplicitly(account, pass, bundle)) {
                 Bundle result = new Bundle();
                 result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-				result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+				result.putString(AccountManager.KEY_ACCOUNT_TYPE, ValtechProfile.ACCOUNT_TYPE);
 				result.putString(AccountManager.KEY_AUTHTOKEN, pass);
 
                 //Enable sync by default
                 Log.i(LOG_TAG, "enabling sync");
-                Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
+                Account[] accounts = am.getAccountsByType(ValtechProfile.ACCOUNT_TYPE);
                 ContentResolver.setIsSyncable(accounts[0], ContactsContract.AUTHORITY, 1);
                 ContentResolver.setSyncAutomatically(accounts[0], ContactsContract.AUTHORITY, true);
 

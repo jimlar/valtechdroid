@@ -29,10 +29,10 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         LOG.debug("Starting sync");
         try {
-            String authToken = accountManager.blockingGetAuthToken(account, context.getString(R.string.ACCOUNT_TYPE), true);
+            String authToken = accountManager.blockingGetAuthToken(account, ValtechProfile.ACCOUNT_TYPE, true);
             APIClient client = new APIClient(account.name, authToken, new APIResponseParser());
 
-            LOG.debug("Downloading intranet data");
+            LOG.debug("Downloading intranet data, account name: " + account.name + ", type: " + account.type);
             List<Employee> employees = client.getEmployees();
 
             ContentResolver resolver = context.getContentResolver();
@@ -42,7 +42,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             LOG.debug("Fetching/creating the sync adapter group");
             Long groupId = groupStorage.getOrCreateGroup();
 
-            ContactsReader reader = new ContactsReader(resolver, account);
+            ContactsReader reader = new ContactsReader(resolver);
             ContactsWriter writer = new ContactsWriter(resolver, account, groupId);
 
             LOG.debug("Reading stored contacts");
@@ -51,10 +51,10 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             LOG.debug("Updating stored contacts");
             writer.updateStoredContacts(storedContacts, employees, syncResult);
 
-            SyncStateManager syncStateManager = new SyncStateManager(resolver, account);
+            SyncStateManager syncStateManager = new SyncStateManager(resolver);
             LOG.debug("Updating statuses");
-            StatusManager statusManager = new StatusManager(resolver, syncStateManager);
-            statusManager.syncStatuses(employees);
+            StatusSynchronizer statusSynchronizer = new StatusSynchronizer(resolver, syncStateManager);
+            statusSynchronizer.syncStatuses(employees);
 
             LOG.debug("Updating stored contact photos");
             PhotoStorage photoStorage = new PhotoStorage(resolver, client, syncStateManager);

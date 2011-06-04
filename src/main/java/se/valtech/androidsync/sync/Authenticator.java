@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import se.valtech.androidsync.Logger;
+import se.valtech.androidsync.storage.ValtechProfile;
 
 import java.util.Arrays;
 
@@ -44,7 +45,7 @@ class Authenticator extends AbstractAccountAuthenticator {
         LOG.debug("getAuthToken, options: " + options);
         Bundle bundle = new Bundle();
         bundle.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-        bundle.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+        bundle.putString(AccountManager.KEY_ACCOUNT_TYPE, ValtechProfile.ACCOUNT_TYPE);
         bundle.putString(AccountManager.KEY_AUTHTOKEN, AccountManager.get(context).getPassword(account));
         return bundle;
     }

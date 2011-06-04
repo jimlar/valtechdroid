@@ -16,11 +16,11 @@ public class GroupStorage {
     }
 
     public Long getOrCreateGroup() {
-        Long groupId = getGroupId(account);
+        Long groupId = getGroupId();
 
         if (groupId == null) {
             createGroup(account);
-            groupId = getGroupId(account);
+            groupId = getGroupId();
         }
 
         return groupId;
@@ -33,20 +33,18 @@ public class GroupStorage {
         values.put(ContactsContract.Groups.SHOULD_SYNC, 0);
 
         values.put(ContactsContract.Groups.ACCOUNT_NAME, account.name);
-        values.put(ContactsContract.Groups.ACCOUNT_TYPE, account.type);
+        values.put(ContactsContract.Groups.ACCOUNT_TYPE, ValtechProfile.ACCOUNT_TYPE);
 
         resolver.insert(ContactsContract.Groups.CONTENT_URI, values);
     }
 
-    private Long getGroupId(Account account) {
+    private Long getGroupId() {
         Cursor cursor = null;
         try {
             cursor = resolver.query(ContactsContract.Groups.CONTENT_URI,
                                                         new String[]{ContactsContract.Groups._ID},
-                                                        ContactsContract.Groups.ACCOUNT_NAME + " = ? AND "
-                                                                + ContactsContract.Groups.ACCOUNT_TYPE + " = ? AND "
-                                                                + ContactsContract.Groups.GROUP_VISIBLE + " = 1",
-                                                        new String[]{account.name, account.type},
+                                                        ContactsContract.Groups.ACCOUNT_TYPE + " = ? AND " + ContactsContract.Groups.GROUP_VISIBLE + " = 1",
+                                                        new String[]{ValtechProfile.ACCOUNT_TYPE},
                                                         null);
             if (cursor.moveToNext()) {
                 return cursor.getLong(0);

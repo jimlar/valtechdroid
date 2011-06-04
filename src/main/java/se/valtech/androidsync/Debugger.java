@@ -24,6 +24,12 @@ public class Debugger {
         Cursor cursor = contentResolver.query(contentUri, null, selection, null, null);
 
         int columns = cursor.getColumnCount();
+        String header = "";
+        for (int i = 0; i < columns; i++) {
+            header += cursor.getColumnName(i) + ", ";
+        }
+        LOG.debug(header);
+        LOG.debug("-------------------------");
         while (cursor.moveToNext()) {
             String data = "";
             for (int i = 0; i < columns; i++) {

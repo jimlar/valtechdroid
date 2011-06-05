@@ -2,7 +2,8 @@
                 android:background="@drawable/widget_bg"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:padding="12px"
+                android:paddingLeft="18px"
+                android:paddingTop="12px"
                 android:orientation="vertical">
 
   <LinearLayout android:orientation="horizontal"

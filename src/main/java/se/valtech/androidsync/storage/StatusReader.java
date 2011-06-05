@@ -3,6 +3,7 @@ package se.valtech.androidsync.storage;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import se.valtech.androidsync.intranet.Employee;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,9 +11,11 @@ import java.util.List;
 
 public class StatusReader {
     private final ContentResolver contentResolver;
+    private final ContactsReader contactsReader;
 
     public StatusReader(ContentResolver contentResolver) {
         this.contentResolver = contentResolver;
+        this.contactsReader = new ContactsReader(contentResolver);
     }
 
     public List<Status> getLatestStatuses(int num) {
@@ -24,15 +27,16 @@ public class StatusReader {
                                                         ContactsContract.StatusUpdates.STATUS,
                                                         ContactsContract.StatusUpdates.STATUS_TIMESTAMP},
                                            ContactsContract.StatusUpdates.STATUS_RES_PACKAGE + " = ?",
-                                           new String[] { "se.valtech.androidsync" },
+                                           new String[]{"se.valtech.androidsync"},
                                            ContactsContract.StatusUpdates.STATUS_TIMESTAMP + " DESC");
 
             while (cursor.moveToNext()) {
-                String dataId = cursor.getString(0);
+                long dataId = cursor.getLong(0);
+                Employee employee = lookupEmployee(dataId);
                 String status = cursor.getString(1);
                 Date date = new Date(cursor.getLong(2));
-                if (status != null && !"".equals(status.trim())) {
-                    statuses.add(new Status(status, date));
+                if (employee != null && status != null && !"".equals(status.trim())) {
+                    statuses.add(new Status(employee, status, date));
                 }
                 if (statuses.size() >= num) {
                     break;
@@ -47,18 +51,41 @@ public class StatusReader {
         return statuses;
     }
 
+    private Employee lookupEmployee(long dataId) {
+        Cursor cursor = null;
+        try {
+            cursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,
+                                           new String[]{ContactsContract.Data.RAW_CONTACT_ID},
+                                           ContactsContract.Data._ID + "=?",
+                                           new String[]{String.valueOf(dataId)},
+                                           null);
+            if (cursor.moveToNext()) {
+                long rawContactId = cursor.getLong(0);
+                return contactsReader.getStoredEmployee(rawContactId);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+
     public static class Status {
-        public final String status;
+        public final Employee employee;
+        public final String text;
         public final Date when;
 
-        public Status(String status, Date when) {
-            this.status = status;
+        public Status(Employee employee, String text, Date when) {
+            this.employee = employee;
+            this.text = text;
             this.when = when;
         }
 
         @Override
         public String toString() {
-            return status;
+            return text;
         }
     }
 }

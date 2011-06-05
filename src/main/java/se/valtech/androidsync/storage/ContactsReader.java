@@ -18,6 +18,32 @@ public class ContactsReader {
         this.resolver = resolver;
     }
 
+    public Employee getStoredEmployee(long rawContactId) {
+        Cursor cursor = null;
+        try {
+            cursor = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
+                                    new String[]{ContactsContract.RawContacts._ID,
+                                                 ContactsContract.RawContacts.SOURCE_ID,
+                                                 ContactsContract.RawContacts.SYNC1},
+                                    ContactsContract.Groups.ACCOUNT_TYPE + " = ? AND " + ContactsContract.RawContacts._ID + " = ?",
+                                    new String[]{ValtechProfile.ACCOUNT_TYPE, String.valueOf(rawContactId)},
+                                    null);
+
+            if (cursor.moveToNext()) {
+                long contactId = cursor.getLong(0);
+                long sourceId = cursor.getLong(1);
+                String imageUrl = cursor.getString(2);
+                return loadStoredEmployee(contactId, sourceId, imageUrl);
+            }
+
+            return null;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
     public Map<Long, StoredContact> getStoredContacts() {
         Map<Long, StoredContact> result = new HashMap<Long, StoredContact>();
 

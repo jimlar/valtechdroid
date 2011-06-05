@@ -44,16 +44,16 @@ public class IntraStatusWidgetProvider extends AppWidgetProvider {
 
         LOGGER.debug("Updating " + statuses.size() + " widget statuses");
         updateStatusLine(views, statuses, R.id.statuswidgettext1, 0);
-        views.setTextViewText(R.id.statuswidgettext2, statuses.get(1).status);
-        views.setTextViewText(R.id.statuswidgettext3, statuses.get(2).status);
-        views.setTextViewText(R.id.statuswidgettext4, statuses.get(3).status);
-
-
+        updateStatusLine(views, statuses, R.id.statuswidgettext2, 1);
+        updateStatusLine(views, statuses, R.id.statuswidgettext3, 2);
+        updateStatusLine(views, statuses, R.id.statuswidgettext4, 3);
     }
 
     private void updateStatusLine(RemoteViews views, List<StatusReader.Status> statuses, int line, int index) {
         if (statuses.size() > index) {
-            views.setTextViewText(line, statuses.get(index).status);
+            StatusReader.Status status = statuses.get(index);
+            String text = status.employee.getFirstName() + " " + status.employee.getLastName() + " " + status.text;
+            views.setTextViewText(line, text);
         }
     }
 }

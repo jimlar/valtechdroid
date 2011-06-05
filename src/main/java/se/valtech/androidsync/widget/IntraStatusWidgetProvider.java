@@ -43,17 +43,17 @@ public class IntraStatusWidgetProvider extends AppWidgetProvider {
         List<StatusReader.Status> statuses = reader.getLatestStatuses(4);
 
         LOGGER.debug("Updating " + statuses.size() + " widget statuses");
-        updateStatusLine(views, statuses, R.id.statuswidgettext1, 0);
-        updateStatusLine(views, statuses, R.id.statuswidgettext2, 1);
-        updateStatusLine(views, statuses, R.id.statuswidgettext3, 2);
-        updateStatusLine(views, statuses, R.id.statuswidgettext4, 3);
+        updateStatusLine(views, statuses, R.id.statusname0, R.id.statustext0, 0);
+        updateStatusLine(views, statuses, R.id.statusname1, R.id.statustext1, 1);
+        updateStatusLine(views, statuses, R.id.statusname2, R.id.statustext2, 2);
+        updateStatusLine(views, statuses, R.id.statusname3, R.id.statustext3, 3);
     }
 
-    private void updateStatusLine(RemoteViews views, List<StatusReader.Status> statuses, int line, int index) {
-        if (statuses.size() > index) {
-            StatusReader.Status status = statuses.get(index);
-            String text = status.employee.getFirstName() + " " + status.employee.getLastName() + " " + status.text;
-            views.setTextViewText(line, text);
+    private void updateStatusLine(RemoteViews views, List<StatusReader.Status> statuses, int nameViewId, int textViewId, int statusIndex) {
+        if (statuses.size() > statusIndex) {
+            StatusReader.Status status = statuses.get(statusIndex);
+            views.setTextViewText(nameViewId, status.employee.getFirstName() + " " + status.employee.getLastName());
+            views.setTextViewText(textViewId, status.text);
         }
     }
 }

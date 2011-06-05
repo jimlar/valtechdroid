@@ -5,32 +5,84 @@
                 android:padding="12px"
                 android:orientation="vertical">
 
-  <TextView android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:lines="1"
-            android:text="Loading..."
-            android:id="@+id/statuswidgettext1"
-            android:textColor="#FFFFFF"/>
+  <LinearLayout android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:lines="1"
+              android:text="Loading..."
+              android:id="@+id/statusname0"
+              android:textColor="#FFFFFF"
+              android:textStyle="bold"
+              android:layout_marginRight="7px"/>
 
-  <TextView android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:lines="1"
-            android:text=""
-            android:id="@+id/statuswidgettext2"
-            android:textColor="#FFFFFF"/>
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:lines="1"
+              android:text=""
+              android:id="@+id/statustext0"
+              android:textColor="#FFFFFF"/>
+  </LinearLayout>
 
-  <TextView android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:lines="1"
-            android:text=""
-            android:id="@+id/statuswidgettext3"
-            android:textColor="#FFFFFF"/>
+  <LinearLayout android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:lines="1"
+              android:text=""
+              android:id="@+id/statusname1"
+              android:textColor="#FFFFFF"
+              android:textStyle="bold"
+              android:layout_marginRight="7px"/>
 
-  <TextView android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:lines="1"
-            android:text=""
-            android:id="@+id/statuswidgettext4"
-            android:textColor="#FFFFFF"/>
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:lines="1"
+              android:text=""
+              android:id="@+id/statustext1"
+              android:textColor="#FFFFFF"/>
+  </LinearLayout>
+
+  <LinearLayout android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:lines="1"
+              android:text=""
+              android:id="@+id/statusname2"
+              android:textColor="#FFFFFF"
+              android:textStyle="bold"
+              android:layout_marginRight="7px"/>
+
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:lines="1"
+              android:text=""
+              android:id="@+id/statustext2"
+              android:textColor="#FFFFFF"/>
+  </LinearLayout>
+
+  <LinearLayout android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:lines="1"
+              android:text=""
+              android:id="@+id/statusname3"
+              android:textColor="#FFFFFF"
+              android:textStyle="bold"
+              android:layout_marginRight="7px"/>
+
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:lines="1"
+              android:text=""
+              android:id="@+id/statustext3"
+              android:textColor="#FFFFFF"/>
+  </LinearLayout>
 
 </LinearLayout>

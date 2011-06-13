@@ -65,15 +65,13 @@ public class DetailsActivity extends Activity {
         private List<StatusReader.Status> statuses;
         private Context context;
 
-        LoadStatusTask(Context context) {
+        public LoadStatusTask(Context context) {
             LOGGER.info("create");
-            this.progressDialog = ProgressDialog.show(context, "", "Loading", true, true);
+            this.progressDialog = ProgressDialog.show(context, "", "Loading statuses...", true, false);
             this.progressMessageHandler = new Handler();
             this.context = context;
             this.contentResolver = context.getContentResolver();
         }
-
-
 
         @Override
         public Boolean doInBackground(String... params) {

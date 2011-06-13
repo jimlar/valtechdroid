@@ -44,5 +44,6 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Market: Better icon
 * Svenska
 * Valtech Git?
+* Stop using pixels for the widget layout stuff
 
 * Widget showing the status stream: http://developer.android.com/guide/topics/appwidgets/index.html

@@ -42,6 +42,7 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Only update modified fields
 * Better icons
 * Market: Better icon
-
+* Svenska
+* Valtech Git?
 
 * Widget showing the status stream: http://developer.android.com/guide/topics/appwidgets/index.html

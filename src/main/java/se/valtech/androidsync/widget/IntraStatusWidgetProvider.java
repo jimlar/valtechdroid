@@ -8,6 +8,8 @@ import se.valtech.androidsync.Logger;
 import se.valtech.androidsync.R;
 import se.valtech.androidsync.storage.StatusReader;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class IntraStatusWidgetProvider extends AppWidgetProvider {
@@ -46,14 +48,21 @@ public class IntraStatusWidgetProvider extends AppWidgetProvider {
         updateStatusLine(views, statuses, R.id.statusname0, R.id.statustext0, 0);
         updateStatusLine(views, statuses, R.id.statusname1, R.id.statustext1, 1);
         updateStatusLine(views, statuses, R.id.statusname2, R.id.statustext2, 2);
-        updateStatusLine(views, statuses, R.id.statusname3, R.id.statustext3, 3);
     }
 
     private void updateStatusLine(RemoteViews views, List<StatusReader.Status> statuses, int nameViewId, int textViewId, int statusIndex) {
         if (statuses.size() > statusIndex) {
             StatusReader.Status status = statuses.get(statusIndex);
-            views.setTextViewText(nameViewId, status.employee.getFirstName() + " " + status.employee.getLastName());
-            views.setTextViewText(textViewId, status.text);
+            views.setTextViewText(nameViewId, formatDate(status.when));
+            views.setTextViewText(textViewId, status.employee.getFirstName() + " " + status.employee.getLastName() + " " + status.text);
         }
+    }
+
+    private String formatDate(Date date) {
+        Date now = new Date();
+        if (now.getDay() == date.getDay()) {
+            return new SimpleDateFormat("HH:mm").format(date);
+        }
+        return new SimpleDateFormat("dd MMM").format(date);
     }
 }

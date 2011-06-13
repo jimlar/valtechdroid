@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content">
     <TextView android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:text="Loading..."
+              android:text=""
               android:singleLine="true"
               android:id="@+id/statusname1"
               android:textColor="#FFFFFF"
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content">
     <TextView android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:text="Loading..."
+              android:text=""
               android:singleLine="true"
               android:id="@+id/statusname2"
               android:textColor="#FFFFFF"

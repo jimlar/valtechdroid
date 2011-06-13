@@ -10,18 +10,18 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import se.valtech.androidsync.Logger;
 import se.valtech.androidsync.R;
 import se.valtech.androidsync.intranet.APIClient;
 import se.valtech.androidsync.intranet.APIResponseParser;
 import se.valtech.androidsync.storage.ValtechProfile;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
-    private static final String LOG_TAG = LoginActivity.class.getName();
+    private static final Logger LOGGER = new Logger(LoginActivity.class);
 
 	private EditText username;
 	private EditText password;
@@ -30,7 +30,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        Log.i(LOG_TAG, "create");
+        LOGGER.info("create");
 		setContentView(R.layout.main);
 
 		username = (EditText) findViewById(R.id.username);
@@ -40,7 +40,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		loginButton.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-                Log.i(LOG_TAG, "click");
+                LOGGER.info("click");
 				String user = username.getText().toString();
 				String password = LoginActivity.this.password.getText().toString();
 
@@ -54,14 +54,14 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	}
 
 	private class LoginTask extends AsyncTask<String, Void, Boolean> {
-        private final String LOG_TAG = LoginTask.class.getName();
+        private final Logger LOGGER = new Logger(LoginTask.class);
 
 		Context context;
 		ProgressDialog progressDialog;
         private Handler progressMessageHandler;
 
 		LoginTask(Context context) {
-            Log.i(LOG_TAG, "create");
+            LOGGER.info("create");
 			this.context = context;
 			loginButton.setEnabled(false);
             progressDialog = ProgressDialog.show(context, "", "Authenticating", true, true);
@@ -72,7 +72,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 		@Override
 		public Boolean doInBackground(String... params) {
-            Log.i(LOG_TAG, "start");
+            LOGGER.info("start");
 			String user = params[0];
 			String pass = params[1];
 
@@ -90,7 +90,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             updateProgress("Creating account");
 			Account account = new Account(user, ValtechProfile.ACCOUNT_TYPE);
 			AccountManager am = AccountManager.get(context);
-            Log.i(LOG_TAG, "adding account");
+            LOGGER.info("adding account");
             Bundle bundle = new Bundle();
             bundle.putString("stuff", "yup");
             if (am.addAccountExplicitly(account, pass, bundle)) {
@@ -100,12 +100,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 				result.putString(AccountManager.KEY_AUTHTOKEN, pass);
 
                 //Enable sync by default
-                Log.i(LOG_TAG, "enabling sync");
+                LOGGER.info("enabling sync");
                 Account[] accounts = am.getAccountsByType(ValtechProfile.ACCOUNT_TYPE);
                 ContentResolver.setIsSyncable(accounts[0], ContactsContract.AUTHORITY, 1);
                 ContentResolver.setSyncAutomatically(accounts[0], ContactsContract.AUTHORITY, true);
 
-                Log.i(LOG_TAG, "setting auth result");
+                LOGGER.info("setting auth result");
 				setAccountAuthenticatorResult(result);
 
 				return true;

@@ -1,8 +1,11 @@
 package se.valtech.androidsync.widget;
 
+import android.app.Activity;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.Intent;
 import android.widget.RemoteViews;
 import se.valtech.androidsync.Logger;
 import se.valtech.androidsync.R;
@@ -30,15 +33,14 @@ public class IntraStatusWidgetProvider extends AppWidgetProvider {
     }
 
     private void setupWidget(Context context, RemoteViews views) {
-/*
+
         // Create an Intent to launch ExampleActivity
         Intent intent = new Intent(context, Activity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         // Get the layout for the App Widget and attach an on-click listener
         // to the button
-        views.setOnClickPendingIntent(R.id.widgettext, pendingIntent);
-*/
+        views.setOnClickPendingIntent(R.id.widgetpanel, pendingIntent);
 
         LOGGER.debug("Reading statuses");
         StatusReader reader = new StatusReader(context.getContentResolver());

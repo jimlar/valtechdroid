@@ -8,7 +8,8 @@
                 android:paddingBottom="0px"
                 android:clickable="true"
                 android:orientation="vertical"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:id="@+id/widgetpanel">
 
   <LinearLayout android:orientation="horizontal"
                 android:layout_width="fill_parent"

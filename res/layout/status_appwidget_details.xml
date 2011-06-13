@@ -1,18 +1,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:background="@drawable/widget_details_bg"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical"
-                android:id="@+id/widgetdetails"
-                android:padding="10px">
+              android:background="@drawable/widget_details_bg"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical"
+              android:id="@+id/widgetdetails"
+              android:padding="10px">
 
-  <TextView android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Loading..."
-            android:singleLine="true"
-            android:id="@+id/test"
-            android:textColor="#000000"
-            android:textStyle="bold"
-            android:layout_marginRight="5px"/>
+  <!-- List Divider -->
+  <View android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:padding="2px"
+        android:background="?android:attr/listDivider"/>
+
+  <!-- ListView (grid_items) -->
+  <LinearLayout android:id="@+id/layout"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent">
+
+    <ListView android:id="@+id/details_listview"
+              android:layout_height="fill_parent"
+              android:layout_width="fill_parent">
+    </ListView>
+
+  </LinearLayout>
 
 </LinearLayout>

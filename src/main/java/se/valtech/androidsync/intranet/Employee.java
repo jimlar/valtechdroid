@@ -112,4 +112,8 @@ public class Employee {
     public boolean hasStatusMessage() {
         return statusMessage != null;
     }
+
+    public String getName() {
+        return getFirstName() + " " + getLastName();
+    }
 }

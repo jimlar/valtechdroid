@@ -51,7 +51,7 @@ public class IntraStatusWidgetProvider extends AppWidgetProvider {
         if (statuses.size() > statusIndex) {
             StatusReader.Status status = statuses.get(statusIndex);
             views.setTextViewText(nameViewId, formatDate(status.when));
-            views.setTextViewText(textViewId, status.employee.getFirstName() + " " + status.employee.getLastName() + " " + status.text);
+            views.setTextViewText(textViewId, status.employee.getName() + " " + status.text);
         }
     }
 

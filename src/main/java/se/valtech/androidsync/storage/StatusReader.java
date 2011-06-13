@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.provider.ContactsContract;
 import se.valtech.androidsync.intranet.Employee;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +37,7 @@ public class StatusReader {
                 String status = cursor.getString(1);
                 Date date = new Date(cursor.getLong(2));
                 if (employee != null && status != null && !"".equals(status.trim())) {
-                    statuses.add(new Status(employee, status, date));
+                    statuses.add(new Status(employee.getName(), status, date));
                 }
                 if (statuses.size() >= num) {
                     break;
@@ -72,13 +73,13 @@ public class StatusReader {
     }
 
 
-    public static class Status {
-        public final Employee employee;
+    public static class Status implements Serializable {
+        public final String employeeName;
         public final String text;
         public final Date when;
 
-        public Status(Employee employee, String text, Date when) {
-            this.employee = employee;
+        public Status(String employeeName, String text, Date when) {
+            this.employeeName = employeeName;
             this.text = text;
             this.when = when;
         }

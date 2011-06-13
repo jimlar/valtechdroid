@@ -1,27 +1,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:background="@drawable/widget_details_bg"
+              android:background="#FFFFFF"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:orientation="vertical"
               android:id="@+id/widgetdetails"
-              android:padding="10px">
-
-  <!-- List Divider -->
-  <View android:layout_width="fill_parent"
-        android:layout_height="1px"
-        android:padding="2px"
-        android:background="?android:attr/listDivider"/>
-
-  <!-- ListView (grid_items) -->
-  <LinearLayout android:id="@+id/layout"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent">
+              android:selectAllOnFocus="false"
+              android:padding="0px">
 
     <ListView android:id="@+id/details_listview"
               android:layout_height="fill_parent"
-              android:layout_width="fill_parent">
+              android:layout_width="fill_parent"
+              android:fadingEdge="none"
+              android:footerDividersEnabled="false"
+              android:headerDividersEnabled="false"
+              android:divider="#000000"
+              android:dividerHeight="1px"
+              android:selectAllOnFocus="false">
     </ListView>
-
-  </LinearLayout>
 
 </LinearLayout>

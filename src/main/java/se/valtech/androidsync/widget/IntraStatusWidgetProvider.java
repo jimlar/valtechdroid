@@ -12,6 +12,7 @@ import se.valtech.androidsync.R;
 import se.valtech.androidsync.storage.StatusReader;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,14 +35,15 @@ public class IntraStatusWidgetProvider extends AppWidgetProvider {
 
     private void setupWidget(Context context, RemoteViews views) {
         Intent intent = new Intent(context, DetailsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
         views.setOnClickPendingIntent(R.id.widgetpanel, pendingIntent);
 
         LOGGER.debug("Reading statuses");
         StatusReader reader = new StatusReader(context.getContentResolver());
-        List<StatusReader.Status> statuses = reader.getLatestStatuses(4);
+        List<StatusReader.Status> statuses = new ArrayList<StatusReader.Status>(reader.getLatestStatuses(30));
 
-        LOGGER.debug("Updating " + statuses.size() + " widget statuses");
+        LOGGER.debug("Updating widget statuses");
         updateStatusLine(views, statuses, R.id.statusname0, R.id.statustext0, 0);
         updateStatusLine(views, statuses, R.id.statusname1, R.id.statustext1, 1);
         updateStatusLine(views, statuses, R.id.statusname2, R.id.statustext2, 2);
@@ -51,7 +53,7 @@ public class IntraStatusWidgetProvider extends AppWidgetProvider {
         if (statuses.size() > statusIndex) {
             StatusReader.Status status = statuses.get(statusIndex);
             views.setTextViewText(nameViewId, formatDate(status.when));
-            views.setTextViewText(textViewId, status.employee.getName() + " " + status.text);
+            views.setTextViewText(textViewId, status.employeeName + " " + status.text);
         }
     }
 

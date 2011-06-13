@@ -12,10 +12,6 @@ import se.valtech.androidsync.R;
 public class DetailsActivity extends AccountAuthenticatorActivity {
     private static final Logger LOGGER = new Logger(DetailsActivity.class);
 
-    private EditText username;
-    private EditText password;
-    private Button loginButton;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

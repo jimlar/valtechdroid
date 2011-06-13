@@ -33,13 +33,8 @@ public class IntraStatusWidgetProvider extends AppWidgetProvider {
     }
 
     private void setupWidget(Context context, RemoteViews views) {
-
-        // Create an Intent to launch ExampleActivity
-        Intent intent = new Intent(context, Activity.class);
+        Intent intent = new Intent(context, DetailsActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-        // Get the layout for the App Widget and attach an on-click listener
-        // to the button
         views.setOnClickPendingIntent(R.id.widgetpanel, pendingIntent);
 
         LOGGER.debug("Reading statuses");

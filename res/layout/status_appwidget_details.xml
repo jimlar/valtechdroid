@@ -4,7 +4,6 @@
               android:layout_height="fill_parent"
               android:orientation="vertical"
               android:id="@+id/widgetdetails"
-              android:selectAllOnFocus="false"
               android:padding="0px">
 
     <ListView android:id="@+id/details_listview"
@@ -15,10 +14,7 @@
               android:headerDividersEnabled="false"
               android:divider="#000000"
               android:dividerHeight="1px"
-              android:selectAllOnFocus="false"
-              android:cacheColorHint="#FFFFFF"
-              android:scrollingCache="true"
-              android:smoothScrollbar="false">
+              android:cacheColorHint="#FFFFFF">
     </ListView>
 
 </LinearLayout>

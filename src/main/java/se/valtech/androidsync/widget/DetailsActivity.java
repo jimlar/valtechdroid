@@ -1,7 +1,5 @@
 package se.valtech.androidsync.widget;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -9,17 +7,13 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import se.valtech.androidsync.Logger;
 import se.valtech.androidsync.R;
-import se.valtech.androidsync.intranet.APIClient;
-import se.valtech.androidsync.intranet.APIResponseParser;
 import se.valtech.androidsync.storage.StatusReader;
-import se.valtech.androidsync.storage.ValtechProfile;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,7 +23,8 @@ import java.util.Map;
 
 public class DetailsActivity extends Activity {
     private static final Logger LOGGER = new Logger(DetailsActivity.class);
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm");
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd MMM");
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,13 +90,14 @@ public class DetailsActivity extends Activity {
                     ListView lv = (ListView) findViewById(R.id.details_listview);
 
                     // Column to view mapping
-                    String[] from = new String[]{"time", "status"};
-                    int[] to = new int[]{R.id.details_item_time, R.id.details_item_status};
+                    String[] from = new String[]{"time", "status", "date"};
+                    int[] to = new int[]{R.id.details_item_time, R.id.details_item_status, R.id.details_item_date};
 
                     List<Map<String, String>> listItems = new ArrayList<Map<String, String>>();
                     for (StatusReader.Status status : statuses) {
                         Map<String, String> map = new HashMap<String, String>();
-                        map.put("time", "" + DATE_FORMAT.format(status.when));
+                        map.put("time", "" + TIME_FORMAT.format(status.when));
+                        map.put("date", "" + DATE_FORMAT.format(status.when));
                         map.put("status", status.employeeName + " " + status.text);
                         listItems.add(map);
                     }

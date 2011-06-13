@@ -41,7 +41,7 @@ public class IntraStatusWidgetProvider extends AppWidgetProvider {
 
         LOGGER.debug("Reading statuses");
         StatusReader reader = new StatusReader(context.getContentResolver());
-        List<StatusReader.Status> statuses = new ArrayList<StatusReader.Status>(reader.getLatestStatuses(30));
+        List<StatusReader.Status> statuses = new ArrayList<StatusReader.Status>(reader.getLatestStatuses(3));
 
         LOGGER.debug("Updating widget statuses");
         updateStatusLine(views, statuses, R.id.statusname0, R.id.statustext0, 0);

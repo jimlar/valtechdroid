@@ -33,7 +33,7 @@ The idea is that you will benefit from getting all types of phone numbers (short
 * Market: Better screenshot
 * Default enable sync
 
- ### Stuff ToDo
+### Stuff ToDo
 * Handle passwords that start to fail in existing account setup
 * Edit password credentials
 * Find a way to do tests in Android that is not pure pain
